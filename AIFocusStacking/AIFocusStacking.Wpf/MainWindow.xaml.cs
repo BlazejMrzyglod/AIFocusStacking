@@ -33,16 +33,16 @@ namespace AIFocusStacking.Wpf
             fileDialog.Multiselect = true;
             if (fileDialog.ShowDialog() == true)
                 foreach (var file in fileDialog.FileNames)
-                    ImagesStackPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(file)), Height = 200, Width = 200 });
+                    ImagesWrapPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(file)), Height = 200, Width = 200 });
         }
 
-        private void imageTest_Drop(object sender, DragEventArgs e)
+        private void ImageTest_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 foreach (var file in files)
-                    ImagesStackPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(file)), Height = 200, Width = 200 });
+                    ImagesWrapPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(file)), Height = 200, Width = 200 });
             }
         }
 

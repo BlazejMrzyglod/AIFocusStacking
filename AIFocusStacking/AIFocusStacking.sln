@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AIFocusStacking.Models", "AIFocusStacking.Models\AIFocusStacking.Models.csproj", "{4F72CDB0-4D3E-4BBB-8116-1A5B4312C9C0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AIFocusStacking.Logic", "AIFocusStacking.Logic\AIFocusStacking.Logic.csproj", "{1316C957-EE45-499E-A686-AEECB65CCB17}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AIFocusStacking.Services", "AIFocusStacking.Logic\AIFocusStacking.Services.csproj", "{1316C957-EE45-499E-A686-AEECB65CCB17}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AIFocusStacking.Tests", "AIFocusStacking.Tests\AIFocusStacking.Tests.csproj", "{99F6DD89-4390-4DF7-857A-AF0042BFF121}"
 EndProject
