@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid >
-        <WrapPanel x:Name="ImagesWrapPanel" AllowDrop="True" Drop="ImageTest_Drop" Background="LightGray" Margin="10,129,10,10"></WrapPanel>
-        <Button Content="Wybierz zdjęcia lub upuść je poniżej" Margin="293,66,292,310" Click="Button_Click"/>
+        <WrapPanel x:Name="ImagesWrapPanel" AllowDrop="True" Drop="ImagesWrapPanel_Drop" Background="LightGray" Margin="10,129,10,10"></WrapPanel>
+        <Button x:Name="ChooseImagesButton" Content="Wybierz zdjęcia lub upuść je poniżej" Margin="293,66,292,310" Click="ChooseImagesButton_Click"/>
     </Grid>
 </Window>
