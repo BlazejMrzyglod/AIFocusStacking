@@ -6,11 +6,9 @@
         xmlns:local="clr-namespace:WPF"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <Image x:Name="imageTest" HorizontalAlignment="Left" Height="128" Margin="280,189,0,0" VerticalAlignment="Top" Width="253"/>
-        <Border BorderBrush="Black" BorderThickness="1">
-            <Button Content="Button" Margin="293,66,292,310" Click="Button_Click"/>
-        </Border>
-
+    <Grid >
+        <StackPanel AllowDrop="True" Drop="imageTest_Drop" Background="AliceBlue"></StackPanel>
+        <Image  x:Name="imageTest" HorizontalAlignment="Left" Height="128" Margin="52,189,0,0" VerticalAlignment="Top" Width="649"   />
+        <Button Content="Button" Margin="293,66,292,310" Click="Button_Click"/>
     </Grid>
 </Window>

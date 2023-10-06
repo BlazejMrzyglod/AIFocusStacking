@@ -29,9 +29,21 @@ namespace WPF
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            if (openFileDialog.ShowDialog() == true)
-                imageTest.Source = new BitmapImage(new Uri(openFileDialog.FileName));
+            OpenFileDialog fileDialog = new OpenFileDialog();
+            fileDialog.Multiselect = true;
+            if (fileDialog.ShowDialog() == true)
+                imageTest.Source = new BitmapImage(new Uri(fileDialog.FileName));
         }
+
+        private void imageTest_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                imageTest.Source = new BitmapImage(new Uri(files[0]));
+            }
+        }
+
     }
 }
