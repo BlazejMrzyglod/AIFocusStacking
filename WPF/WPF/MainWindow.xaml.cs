@@ -32,7 +32,8 @@ namespace WPF
             OpenFileDialog fileDialog = new OpenFileDialog();
             fileDialog.Multiselect = true;
             if (fileDialog.ShowDialog() == true)
-                imageTest.Source = new BitmapImage(new Uri(fileDialog.FileName));
+                foreach (var file in fileDialog.FileNames)
+                    ImagesStackPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(file)), Height = 200, Width = 200 });
         }
 
         private void imageTest_Drop(object sender, DragEventArgs e)
@@ -41,7 +42,8 @@ namespace WPF
             {
 
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                imageTest.Source = new BitmapImage(new Uri(files[0]));
+                foreach (var file in files)
+                    ImagesStackPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(file)), Height = 200, Width = 200 });
             }
         }
 

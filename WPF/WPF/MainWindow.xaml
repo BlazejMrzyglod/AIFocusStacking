@@ -7,8 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid >
-        <StackPanel AllowDrop="True" Drop="imageTest_Drop" Background="AliceBlue"></StackPanel>
-        <Image  x:Name="imageTest" HorizontalAlignment="Left" Height="128" Margin="52,189,0,0" VerticalAlignment="Top" Width="649"   />
+        <StackPanel x:Name="ImagesStackPanel" AllowDrop="True" Drop="imageTest_Drop" Background="Gray"></StackPanel>
         <Button Content="Button" Margin="293,66,292,310" Click="Button_Click"/>
     </Grid>
 </Window>
