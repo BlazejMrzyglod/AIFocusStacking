@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace WPF
+namespace AIFocusStacking.Wpf
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -40,7 +40,6 @@ namespace WPF
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 foreach (var file in files)
                     ImagesStackPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(file)), Height = 200, Width = 200 });
