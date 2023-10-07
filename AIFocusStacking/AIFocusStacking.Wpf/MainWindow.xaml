@@ -9,5 +9,6 @@
     <Grid >
         <WrapPanel x:Name="ImagesWrapPanel" AllowDrop="True" Drop="ImagesWrapPanel_Drop" Background="LightGray" Margin="10,129,10,10"></WrapPanel>
         <Button x:Name="ChooseImagesButton" Content="Wybierz zdjęcia lub upuść je poniżej" Margin="293,66,292,310" Click="ChooseImagesButton_Click"/>
+        <Button Content="Button" HorizontalAlignment="Left" Height="58" Margin="561,66,0,0" VerticalAlignment="Top" Width="122" Click="run_cmd"/>
     </Grid>
 </Window>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -60,6 +61,23 @@ namespace AIFocusStacking.Wpf
                 Directory.CreateDirectory("images");
                 File.Copy(photo, "images\\photo" + i + ".jpg"); //TODO: Rozszerzenie powinno być zmienne
                 i++;
+            }
+        }
+
+        private void run_cmd(object sender, RoutedEventArgs e)
+        {
+            ProcessStartInfo start = new ProcessStartInfo();
+            start.FileName = "C:\\Users\\blaze\\AppData\\Local\\Programs\\Python\\Python37\\python.exe";
+            start.Arguments = "C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\demo\\demo.py --config-file C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\projects\\PointRend\\configs\\InstanceSegmentation\\pointrend_rcnn_X_101_32x8d_FPN_3x_coco.yaml  --input C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\demo\\pokojTest3.jpg --output C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\demo\\Output --opts MODEL.DEVICE cpu MODEL.WEIGHTS C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\demo\\model_final_ba17b9.pkl";
+            start.UseShellExecute = false;
+            start.RedirectStandardOutput = true;
+            using (Process process = Process.Start(start))
+            {
+                using (StreamReader reader = process.StandardOutput)
+                {
+                    string result = reader.ReadToEnd();
+                    Console.Write(result);
+                }
             }
         }
 
