@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using AIFocusStacking.Services;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -23,8 +24,10 @@ namespace AIFocusStacking.Wpf
     /// </summary>
     public partial class MainWindow : Window
     {
-         public MainWindow()
+        protected IPhotoRepository _photoRepository;
+         public MainWindow(IPhotoRepository photoRepository)
         {
+            _photoRepository = photoRepository;
             InitializeComponent();          
         }
 
@@ -55,13 +58,7 @@ namespace AIFocusStacking.Wpf
         //TODO: Przenieść do serwisów
         private void SavePhotos(string[] photos)
         {
-            int i = 0;
-            foreach (var photo in photos) 
-            {
-                Directory.CreateDirectory("images");
-                File.Copy(photo, "images\\photo" + i + ".jpg"); //TODO: Rozszerzenie powinno być zmienne
-                i++;
-            }
+            _photoRepository.CreateMultiple(photos);
         }
 
         //Funkcja uruchamiająca detectrona w konsoli
