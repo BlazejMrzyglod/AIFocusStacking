@@ -64,11 +64,13 @@ namespace AIFocusStacking.Wpf
             }
         }
 
+        //Funkcja uruchamiająca detectrona w konsoli
+        //TODO: Przenieść do serwisów
         private void run_cmd(object sender, RoutedEventArgs e)
         {
             ProcessStartInfo start = new ProcessStartInfo();
-            start.FileName = "C:\\Users\\blaze\\AppData\\Local\\Programs\\Python\\Python37\\python.exe";
-            start.Arguments = "C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\demo\\demo.py --config-file C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\projects\\PointRend\\configs\\InstanceSegmentation\\pointrend_rcnn_X_101_32x8d_FPN_3x_coco.yaml  --input C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\demo\\pokojTest3.jpg --output C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\demo\\Output --opts MODEL.DEVICE cpu MODEL.WEIGHTS C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\demo\\model_final_ba17b9.pkl";
+            start.FileName = "CMD.exe";
+            start.Arguments = "/C python C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\demo\\demo.py --config-file C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\projects\\PointRend\\configs\\InstanceSegmentation\\pointrend_rcnn_X_101_32x8d_FPN_3x_coco.yaml  --input C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\demo\\pokojTest3.jpg --output C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\demo\\Output --opts MODEL.DEVICE cpu MODEL.WEIGHTS C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\demo\\model_final_ba17b9.pkl";
             start.UseShellExecute = false;
             start.RedirectStandardOutput = true;
             using (Process process = Process.Start(start))
