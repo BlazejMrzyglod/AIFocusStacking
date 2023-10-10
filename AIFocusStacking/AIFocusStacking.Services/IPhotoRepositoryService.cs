@@ -15,6 +15,7 @@ namespace AIFocusStacking.Services
         ServiceResult CreateMultiple(string[] photo);
         ServiceResult Delete(string photo);
         ServiceResult DeleteMultiple(string[] photo);
+        ServiceResult DeleteAll();
         ServiceResult Edit(string photo);
         ServiceResult EditMultiple(string[] photo);
     }

@@ -83,6 +83,21 @@ namespace AIFocusStacking.Services
             return result;
         }
 
+        public ServiceResult DeleteAll()
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                Directory.Delete(_repositoryFolder, true);
+                result.Result = ServiceResultStatus.Succes;
+            }
+            catch (Exception e)
+            {
+                result.Result = ServiceResultStatus.Error;
+                result.Messages.Add(e.Message);
+            }
+            return result;
+        }
         public ServiceResult Edit(string photo)
         {
             ServiceResult result = new ServiceResult();
