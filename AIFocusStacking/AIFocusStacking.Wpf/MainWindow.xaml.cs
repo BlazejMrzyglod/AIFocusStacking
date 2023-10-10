@@ -61,6 +61,8 @@ namespace AIFocusStacking.Wpf
         private void RunModelButton_Click(object sender, RoutedEventArgs e)
         {
             _commandsService.RunModel();
+            ObjectsWindow objectsWindow = new ObjectsWindow();
+            objectsWindow.Show();
         }
 
     }
