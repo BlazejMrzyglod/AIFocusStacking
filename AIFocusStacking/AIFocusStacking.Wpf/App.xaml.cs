@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -32,6 +33,14 @@ namespace AIFocusStacking.Wpf
         {
             var mainWindow = serviceProvider.GetService<MainWindow>();
             mainWindow.Show();
+        }
+        protected override void OnExit(ExitEventArgs e)
+        {
+            IPhotoRepositoryService photoRepositoryService = serviceProvider.GetService<IPhotoRepositoryService>();
+            IConsoleCommandsService consoleCommandsService = serviceProvider.GetService<IConsoleCommandsService>();
+            photoRepositoryService.DeleteAll();
+            consoleCommandsService.ClearOutputDirectory();
+            base.OnExit(e);
         }
     }
 }
