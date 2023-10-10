@@ -24,10 +24,12 @@ namespace AIFocusStacking.Wpf
     /// </summary>
     public partial class MainWindow : Window
     {
-        protected IPhotoRepository _photoRepository;
-         public MainWindow(IPhotoRepository photoRepository)
+        protected IPhotoRepositoryService _photoRepository;
+        protected IConsoleCommandsService _commandsService;
+         public MainWindow(IPhotoRepositoryService photoRepository, IConsoleCommandsService commandsService)
         {
             _photoRepository = photoRepository;
+            _commandsService = commandsService;
             InitializeComponent();          
         }
 
@@ -56,29 +58,9 @@ namespace AIFocusStacking.Wpf
 
         //Funkcja uruchamiająca detectrona w konsoli
         //TODO: Przenieść do serwisów
-        private void run_cmd(object sender, RoutedEventArgs e)
+        private void RunModelButton_Click(object sender, RoutedEventArgs e)
         {
-            IEnumerable<string> photos = _photoRepository.GetAll();
-            ProcessStartInfo start = new ProcessStartInfo();
-            string script = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\demo\\demo.py";
-            string configFile = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\projects\\PointRend\\configs\\InstanceSegmentation\\pointrend_rcnn_X_101_32x8d_FPN_3x_coco.yaml";
-            string outputDirectory = "outputImages";
-            Directory.CreateDirectory(outputDirectory);
-            string options = "MODEL.DEVICE cpu";
-            string weights = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\demo\\model_final_ba17b9.pkl";
-            start.FileName = "CMD.exe";
-            start.Arguments = $"/C python {script} --config-file {configFile} --input {string.Join(" ", photos)} --output {outputDirectory} --opts {options} MODEL.WEIGHTS {weights}";
-            start.UseShellExecute = false;
-            start.RedirectStandardOutput = true;
-            using (Process process = Process.Start(start))
-            {
-                using (StreamReader reader = process.StandardOutput)
-                {
-                    string result = reader.ReadToEnd();
-                    Console.Write(result);
-                }
-            }
-            _photoRepository.DeleteMultiple(photos.ToArray());
+            _commandsService.RunModel();
         }
 
     }
