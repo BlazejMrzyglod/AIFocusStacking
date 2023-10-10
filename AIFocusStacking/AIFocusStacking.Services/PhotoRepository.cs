@@ -53,7 +53,7 @@ namespace AIFocusStacking.Services
             ServiceResult result = new ServiceResult();
             try
             {
-                File.Delete(_repositoryFolder + "\\" + photo);
+                File.Delete(_repositoryFolder + "\\" + photo.Split("\\").Last());
                 result.Result = ServiceResultStatus.Succes;
             }
             catch (Exception e)
@@ -71,7 +71,7 @@ namespace AIFocusStacking.Services
             {
                 foreach (var photo in photos)
                 {
-                    File.Delete(_repositoryFolder + "\\" + photo);
+                    File.Delete(_repositoryFolder + "\\" + photo.Split("\\").Last());
                     result.Result = ServiceResultStatus.Succes;
                 }          
             }
@@ -89,7 +89,7 @@ namespace AIFocusStacking.Services
             try
             {
                 Directory.CreateDirectory(_repositoryFolder);
-                File.Delete(_repositoryFolder + "\\"+ photo);
+                File.Delete(_repositoryFolder + "\\" + photo.Split("\\").Last());
                 File.Copy(photo, _repositoryFolder + "\\" + photo.Split("\\").Last());
                 result.Result = ServiceResultStatus.Succes;
             }
@@ -109,7 +109,7 @@ namespace AIFocusStacking.Services
                 foreach (var photo in photos)
                 {
                     Directory.CreateDirectory(_repositoryFolder);
-                    File.Delete(_repositoryFolder + "\\" + photo);
+                    File.Delete(_repositoryFolder + "\\" + photo.Split("\\").Last());
                     File.Copy(photo, _repositoryFolder + "\\" + photo.Split("\\").Last());
                     result.Result = ServiceResultStatus.Succes;
                 }            
