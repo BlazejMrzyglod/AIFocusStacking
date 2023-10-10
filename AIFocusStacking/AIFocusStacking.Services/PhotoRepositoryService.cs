@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AIFocusStacking.Services
 {
-    public class PhotoRepository : IPhotoRepository
+    public class PhotoRepositoryService : IPhotoRepositoryService
     {
         protected string _repositoryFolder = "images";
         public ServiceResult Create(string photo)

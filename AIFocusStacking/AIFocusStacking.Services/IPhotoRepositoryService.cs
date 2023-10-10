@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AIFocusStacking.Services
 {
-    public interface IPhotoRepository
+    public interface IPhotoRepositoryService
     {
         IEnumerable<string> GetAll();
         string GetSingle(string photo);
