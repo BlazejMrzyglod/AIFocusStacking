@@ -10,10 +10,12 @@ namespace AIFocusStacking.Services
     public class ConsoleCommandsService : IConsoleCommandsService
     {
         protected IPhotoRepositoryService _photoRepository;
+        protected string outputDirectory;
 
         public ConsoleCommandsService(IPhotoRepositoryService photoRepository)
         {
             _photoRepository = photoRepository;
+            outputDirectory = "outputImages";
         }
         public ServiceResult RunModel()
         {
@@ -24,7 +26,6 @@ namespace AIFocusStacking.Services
                 ProcessStartInfo start = new ProcessStartInfo();
                 string script = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\demo\\demo.py";
                 string configFile = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\projects\\PointRend\\configs\\InstanceSegmentation\\pointrend_rcnn_X_101_32x8d_FPN_3x_coco.yaml";
-                string outputDirectory = "outputImages";
                 Directory.CreateDirectory(outputDirectory);
                 string options = "MODEL.DEVICE cpu";
                 string weights = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\demo\\model_final_ba17b9.pkl";
@@ -41,6 +42,23 @@ namespace AIFocusStacking.Services
                     }
                 }
                 _photoRepository.DeleteMultiple(photos.ToArray());
+                result.Result = ServiceResultStatus.Succes;
+            }
+            catch (Exception e)
+            {
+                result.Result = ServiceResultStatus.Error;
+                result.Messages.Add(e.Message);
+            }
+
+            return result;
+        }
+
+        public ServiceResult ClearOutputDirectory()
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                Directory.Delete(outputDirectory, true);
                 result.Result = ServiceResultStatus.Succes;
             }
             catch (Exception e)
