@@ -37,7 +37,7 @@ namespace AIFocusStacking.Wpf
             OpenFileDialog fileDialog = new OpenFileDialog();
             fileDialog.Multiselect = true;
             if (fileDialog.ShowDialog() == true)
-                SavePhotos(fileDialog.FileNames);
+                _photoRepository.CreateMultiple(fileDialog.FileNames);
                 foreach (var file in fileDialog.FileNames)
                     ImagesWrapPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(file)), Height = 200, Width = 200 });
         }
@@ -48,26 +48,26 @@ namespace AIFocusStacking.Wpf
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                SavePhotos(files);
+                _photoRepository.CreateMultiple(files);
                 foreach (var file in files)
                     ImagesWrapPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(file)), Height = 200, Width = 200 });
             }
-        }
-
-        //Funkcja zapisująca zdjęcia do późniejszej przeróbki
-        //TODO: Przenieść do serwisów
-        private void SavePhotos(string[] photos)
-        {
-            _photoRepository.CreateMultiple(photos);
         }
 
         //Funkcja uruchamiająca detectrona w konsoli
         //TODO: Przenieść do serwisów
         private void run_cmd(object sender, RoutedEventArgs e)
         {
+            IEnumerable<string> photos = _photoRepository.GetAll();
             ProcessStartInfo start = new ProcessStartInfo();
+            string script = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\demo\\demo.py";
+            string configFile = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\projects\\PointRend\\configs\\InstanceSegmentation\\pointrend_rcnn_X_101_32x8d_FPN_3x_coco.yaml";
+            string outputDirectory = "outputImages";
+            Directory.CreateDirectory(outputDirectory);
+            string options = "MODEL.DEVICE cpu";
+            string weights = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\demo\\model_final_ba17b9.pkl";
             start.FileName = "CMD.exe";
-            start.Arguments = "/C python C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\demo\\demo.py --config-file C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\projects\\PointRend\\configs\\InstanceSegmentation\\pointrend_rcnn_X_101_32x8d_FPN_3x_coco.yaml  --input C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\demo\\pokojTest3.jpg --output C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\demo\\Output --opts MODEL.DEVICE cpu MODEL.WEIGHTS C:\\Users\\blaze\\Pulpit\\Studia\\Inżynierka\\Detectron2\\detectron2\\demo\\model_final_ba17b9.pkl";
+            start.Arguments = $"/C python {script} --config-file {configFile} --input {string.Join(" ", photos)} --output {outputDirectory} --opts {options} MODEL.WEIGHTS {weights}";
             start.UseShellExecute = false;
             start.RedirectStandardOutput = true;
             using (Process process = Process.Start(start))
@@ -78,6 +78,7 @@ namespace AIFocusStacking.Wpf
                     Console.Write(result);
                 }
             }
+            _photoRepository.DeleteMultiple(photos.ToArray());
         }
 
     }
