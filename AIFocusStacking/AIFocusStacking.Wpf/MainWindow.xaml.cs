@@ -7,7 +7,8 @@ using System.Windows.Media.Imaging;
 using OpenCvSharp;
 using System.Collections.Generic;
 using System.Linq;
-using static System.Net.Mime.MediaTypeNames;
+using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace AIFocusStacking.Wpf
 {
@@ -64,7 +65,32 @@ namespace AIFocusStacking.Wpf
 		//TODO: Przenieść do serwisów
 		private void RunModelButton_Click(object sender, RoutedEventArgs e)
 		{
+			Mat mat = new Mat(_photoRepository.GetAll().First());
 			_commandsService.RunModel();
+			List<List<OpenCvSharp.Point>> contours = new List<List<OpenCvSharp.Point>>();
+			JArray masksJson = JArray.Parse(File.ReadAllText("masks.json"));
+			foreach (var mask in masksJson)
+			{
+				List<OpenCvSharp.Point> currentMask = new List<OpenCvSharp.Point>();
+				
+				foreach (var points in mask)
+				{
+					currentMask.Add(new OpenCvSharp.Point((int)points[0][0], (int)points[0][1]));
+				}
+				contours.Add(currentMask);
+			}
+			Mat Mask = new Mat(mat.Size(), mat.Type(), new Scalar(0, 0, 0));
+			for (int i = 0; i < contours.Count; i++)
+			{
+				Cv2.DrawContours(Mask, contours.GetRange(i, 1), -1, new Scalar(255, 255, 255), -1);
+			}
+			
+			Cv2.BitwiseAnd(mat, Mask, mat);
+
+
+
+			Mask.SaveImage("tes.jpg");
+
 			ObjectsWindow objectsWindow = new ObjectsWindow();
 			objectsWindow.Show();
 		}
@@ -119,6 +145,7 @@ namespace AIFocusStacking.Wpf
 				TakeAllPixels(alignedImages, laplacedImages, result, ref maxIntensity, ref intensity);
 			}
 
+			
 			result.SaveImage("result.jpg");
 
 
