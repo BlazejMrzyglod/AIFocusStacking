@@ -28,6 +28,7 @@ namespace AIFocusStacking.Wpf
             services.AddSingleton<MainWindow>();
             services.AddScoped(typeof(IPhotoRepositoryService), typeof(PhotoRepositoryService));
             services.AddScoped(typeof(IConsoleCommandsService), typeof(ConsoleCommandsService));
+            services.AddScoped(typeof(IFocusStackingService), typeof(FocusStackingService));
         }
         private void OnStartup(object sender, StartupEventArgs e)
         {

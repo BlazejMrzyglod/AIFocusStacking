@@ -8,9 +8,8 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid >
         <WrapPanel x:Name="ImagesWrapPanel" AllowDrop="True" Drop="ImagesWrapPanel_Drop" Background="LightGray" Margin="10,129,10,10"></WrapPanel>
-        <Button x:Name="RunFocusStacking" Content="Połącz zdjęcia" HorizontalAlignment="Left" Height="58" Margin="561,66,0,0" VerticalAlignment="Top" Width="122" Click="RunFocusStacking_Click" RenderTransformOrigin="0.474,0.511"/>
-        <Button x:Name="ChooseImagesButton" Content="Wybierz zdjęcia lub upuść je poniżej" Margin="293,66,292,310" Click="ChooseImagesButton_Click"/>
-        <Button x:Name="RunModelButton" Content="Wykryj obiekty" HorizontalAlignment="Left" Height="58" Margin="112,66,0,0" VerticalAlignment="Top" Width="122" Click="RunModelButton_Click"/>
+        <Button x:Name="RunFocusStacking" Content="Połącz zdjęcia" HorizontalAlignment="Left" Height="58" Margin="441,66,0,0" VerticalAlignment="Top" Width="122" Click="RunFocusStacking_Click" RenderTransformOrigin="0.474,0.511"/>
+        <Button x:Name="ChooseImagesButton" Content="Wybierz zdjęcia lub upuść je poniżej" Margin="185,66,400,310" Click="ChooseImagesButton_Click"/>
         <CheckBox x:Name="Alignment" IsChecked="False" Content="CheckBox" HorizontalAlignment="Left" Height="15" Margin="101,22,0,0" VerticalAlignment="Top" Width="17" Click="Alignment_Click"/>
         <CheckBox x:Name="Gauss" IsChecked="True" Content="CheckBox" HorizontalAlignment="Left" Height="14" Margin="258,25,0,0" VerticalAlignment="Top" Width="17" Click="Gauss_Click"/>
         <Label Content="Wyrównanie" HorizontalAlignment="Left" Height="26" Margin="16,16,0,0" VerticalAlignment="Top" Width="80"/>
