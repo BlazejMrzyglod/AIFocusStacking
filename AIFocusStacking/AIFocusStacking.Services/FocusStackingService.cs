@@ -1,4 +1,5 @@
-﻿using OpenCvSharp;
+﻿using Newtonsoft.Json.Linq;
+using OpenCvSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,23 +38,50 @@ namespace AIFocusStacking.Services
 			{
 				List<Mat> alignedImages = new List<Mat>();
 				List<Mat> laplacedImages = new List<Mat>();
+				List<Mat> masks = new List<Mat>();
 				// Load the reference image
 				Mat referenceImage = new Mat(photos.First());
 				alignedImages.Add(referenceImage);
 				// Iterate through the rest of the images and align them to the reference image
-				for (int i = 1; i < photos.Count(); i++)
+				for (int i = 0; i < photos.Count(); i++)
 				{
-					// Load the current image
-					Mat currentImage = new Mat(photos.ToArray()[i]);
-
-					// Align the current image to the reference image
-					if (alignment)
+					if (i != 0)
 					{
-						Mat alignedImage = AlignImages(referenceImage, currentImage);
-						alignedImages.Add(alignedImage);
+						// Load the current image
+						Mat currentImage = new Mat(photos.ToArray()[i]);
+
+						// Align the current image to the reference image
+						if (alignment)
+						{
+							Mat alignedImage = AlignImages(referenceImage, currentImage);
+							alignedImages.Add(alignedImage);
+						}
+						else
+							alignedImages.Add(currentImage);
 					}
-					else
-						alignedImages.Add(currentImage);
+					Mat imageToMask = alignedImages.ToArray()[i].Clone();
+
+					List<List<Point>> contours = new List<List<Point>>();
+					JArray masksJson = JArray.Parse(File.ReadAllText($"masks{photos.ToArray()[i].Split('\\').Last()}.json"));
+					foreach (var mask in masksJson)
+					{
+						List<Point> currentMask = new List<Point>();
+
+						foreach (var points in mask)
+						{
+							currentMask.Add(new Point((int)points[0][0], (int)points[0][1]));
+						}
+						contours.Add(currentMask);
+					}
+					Mat Mask = new Mat(imageToMask.Size(), imageToMask.Type(), new Scalar(0, 0, 0));
+					for (int j = 0; j < contours.Count; j++)
+					{
+						Cv2.DrawContours(Mask, contours.GetRange(j, 1), -1, new Scalar(255, 255, 255), -1);
+					}
+
+					Cv2.BitwiseAnd(imageToMask, Mask, imageToMask);
+					masks.Add(Mask);
+					Mask.SaveImage($"mask{photos.ToArray()[i].Split('\\').Last()}.jpg");
 				}
 				Mat matGauss = new Mat();
 
@@ -85,29 +113,9 @@ namespace AIFocusStacking.Services
 
 				result.SaveImage("result.jpg");
 
-				/*Mat mat = new Mat(_photoRepository.GetAll().First());
+				
 
-				List<List<OpenCvSharp.Point>> contours = new List<List<OpenCvSharp.Point>>();
-				JArray masksJson = JArray.Parse(File.ReadAllText("masks.json"));
-				foreach (var mask in masksJson)
-				{
-					List<OpenCvSharp.Point> currentMask = new List<OpenCvSharp.Point>();
-
-					foreach (var points in mask)
-					{
-						currentMask.Add(new OpenCvSharp.Point((int)points[0][0], (int)points[0][1]));
-					}
-					contours.Add(currentMask);
-				}
-				Mat Mask = new Mat(mat.Size(), mat.Type(), new Scalar(0, 0, 0));
-				for (int i = 0; i < contours.Count; i++)
-				{
-					Cv2.DrawContours(Mask, contours.GetRange(i, 1), -1, new Scalar(255, 255, 255), -1);
-				}
-
-				Cv2.BitwiseAnd(mat, Mask, mat);
-
-				Mask.SaveImage("tes.jpg");*/
+				serviceResult.Result = ServiceResultStatus.Succes;
 			}
 			catch (Exception e)
 			{
