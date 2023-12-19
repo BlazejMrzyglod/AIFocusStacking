@@ -43,7 +43,7 @@ namespace AIFocusStacking.Services
                         Console.Write(consoleResult);
                     }
                 }
-                _photoRepository.DeleteMultiple(photos.ToArray());
+                //_photoRepository.DeleteMultiple(photos.ToArray());
                 result.Result = ServiceResultStatus.Succes;
             }
             catch (Exception e)
