@@ -62,6 +62,7 @@ namespace AIFocusStacking.Services
 					Mat imageToMask = alignedImages.ToArray()[i].Clone();
 
 					List<List<Point>> contours = new List<List<Point>>();
+					List<Rect> boxes = new List<Rect>();
 					JArray masksJson = JArray.Parse(File.ReadAllText($"masks{photos.ToArray()[i].Split('\\').Last()}.json"));
 					foreach (var mask in masksJson)
 					{
@@ -71,6 +72,7 @@ namespace AIFocusStacking.Services
 						{
 							currentMask.Add(new Point((int)points[0][0], (int)points[0][1]));
 						}
+						boxes.Add(Cv2.BoundingRect(currentMask));
 						contours.Add(currentMask);
 					}
 					Mat Mask = new Mat(imageToMask.Size(), imageToMask.Type(), new Scalar(0, 0, 0));
