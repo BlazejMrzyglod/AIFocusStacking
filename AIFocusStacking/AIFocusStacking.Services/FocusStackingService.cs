@@ -38,27 +38,38 @@ namespace AIFocusStacking.Services
 			{
 				List<Mat> alignedImages = new List<Mat>();
 				List<Mat> laplacedImages = new List<Mat>();
-				List<Mat> masks = new List<Mat>();
 				// Load the reference image
 				Mat referenceImage = new Mat(photos.First());
 				alignedImages.Add(referenceImage);
 				// Iterate through the rest of the images and align them to the reference image
+				for (int i = 1; i < photos.Count(); i++)
+				{
+					// Load the current image
+					Mat currentImage = new Mat(photos.ToArray()[i]);
+
+					// Align the current image to the reference image
+					if (alignment)
+					{
+						Mat alignedImage = AlignImages(referenceImage, currentImage);
+						alignedImages.Add(alignedImage);
+					}
+					else
+						alignedImages.Add(currentImage);
+				}
+				Mat matGauss = new Mat();
+				List<List<int>> intensities = new List<List<int>>();
 				for (int i = 0; i < photos.Count(); i++)
 				{
-					if (i != 0)
-					{
-						// Load the current image
-						Mat currentImage = new Mat(photos.ToArray()[i]);
+					if (gauss)
+						Cv2.GaussianBlur(alignedImages.ToArray()[i], matGauss, new Size() { Height = gaussSize, Width = gaussSize }, 0);
+					else
+						alignedImages.ToArray()[i].CopyTo(matGauss);
+					Cv2.CvtColor(matGauss, matGauss, ColorConversionCodes.BGR2GRAY);
+					Mat matLaplace = new Mat();
+					Cv2.Laplacian(matGauss, matLaplace, -1, laplaceSize);
+					laplacedImages.Add(matLaplace);
+					matLaplace.SaveImage($"laplace{i}.jpg");
 
-						// Align the current image to the reference image
-						if (alignment)
-						{
-							Mat alignedImage = AlignImages(referenceImage, currentImage);
-							alignedImages.Add(alignedImage);
-						}
-						else
-							alignedImages.Add(currentImage);
-					}
 					Mat imageToMask = alignedImages.ToArray()[i].Clone();
 
 					List<List<Point>> contours = new List<List<Point>>();
@@ -75,29 +86,61 @@ namespace AIFocusStacking.Services
 						boxes.Add(Cv2.BoundingRect(currentMask));
 						contours.Add(currentMask);
 					}
-					Mat Mask = new Mat(imageToMask.Size(), imageToMask.Type(), new Scalar(0, 0, 0));
+
+					List<int> currentIntensities = new List<int>();
+
 					for (int j = 0; j < contours.Count; j++)
 					{
+						int maskIntensity = 0;
+						Mat Mask = new Mat(imageToMask.Size(), imageToMask.Type(), new Scalar(0, 0, 0));
 						Cv2.DrawContours(Mask, contours.GetRange(j, 1), -1, new Scalar(255, 255, 255), -1);
+
+						for (int k = boxes[j].Top; k <= boxes[j].Bottom; k++)
+						{
+							for (int l = boxes[j].Left; l <= boxes[j].Right; l++)
+							{
+								if (Mask.At<byte>(k, l) == 255)
+								{
+									maskIntensity += matLaplace.At<byte>(k, l);
+								}
+							}
+						}
+						currentIntensities.Add(maskIntensity);
 					}
 
-					Cv2.BitwiseAnd(imageToMask, Mask, imageToMask);
-					masks.Add(Mask);
-					Mask.SaveImage($"mask{photos.ToArray()[i].Split('\\').Last()}.jpg");
+					intensities.Add(currentIntensities);
 				}
-				Mat matGauss = new Mat();
 
-				for (int i = 0; i < photos.Count(); i++)
+				for (int i = 0; i < intensities.First().Count(); i++)
 				{
-					if (gauss)
-						Cv2.GaussianBlur(alignedImages.ToArray()[i], matGauss, new OpenCvSharp.Size() { Height = gaussSize, Width = gaussSize }, 0);
-					else
-						alignedImages.ToArray()[i].CopyTo(matGauss);
-					Cv2.CvtColor(matGauss, matGauss, ColorConversionCodes.BGR2GRAY);
-					Mat matLaplace = new Mat();
-					Cv2.Laplacian(matGauss, matLaplace, -1, laplaceSize);
-					laplacedImages.Add(matLaplace);
-					matLaplace.SaveImage($"laplace{i}.jpg");
+					int maxMaskIntensity = 0;
+					int index = 0;
+					for (int j = 0; j < photos.Count(); j++)
+					{
+						if (intensities[j][i] > maxMaskIntensity) { maxMaskIntensity = intensities[j][i]; index = j; }
+					}
+					List<List<Point>> contours = new List<List<Point>>();
+					List<Point> currentMask = new List<Point>();
+
+					JArray masksJson = JArray.Parse(File.ReadAllText($"masks{photos.ToArray()[index].Split('\\').Last()}.json"));
+					foreach (var points in masksJson[i])
+					{
+						currentMask.Add(new Point((int)points[0][0], (int)points[0][1]));
+					}
+					contours.Add(currentMask);
+					for (int j = 0; j < laplacedImages.Count(); j++)
+					{
+						if (j == index)
+						{
+							Cv2.DrawContours(laplacedImages[j], contours, -1, new Scalar(255, 255, 255), -1);
+						}
+						else
+						{
+							Cv2.DrawContours(laplacedImages[j], contours, -1, new Scalar(0, 0, 0), -1);
+						}
+						laplacedImages[j].SaveImage($"laplace{j}.jpg");
+					}
+
 				}
 				Mat result = alignedImages.First().Clone();
 				byte maxIntensity = 0;
@@ -115,7 +158,7 @@ namespace AIFocusStacking.Services
 
 				result.SaveImage("result.jpg");
 
-				
+
 
 				serviceResult.Result = ServiceResultStatus.Succes;
 			}
