@@ -21,5 +21,11 @@
         <TextBox x:Name="MaskSize" HorizontalAlignment="Left" Height="20" Margin="666,25,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="26" TextChanged="MaskSize_TextChanged"/>
         <CheckBox x:Name="TakeAll" IsChecked="False" Content="CheckBox" HorizontalAlignment="Left" Height="15" Margin="156,48,0,0" VerticalAlignment="Top" Width="17" Click="TakeAll_Click"/>
         <Label Content="Bierz wszystkie piksele" HorizontalAlignment="Left" Height="34" Margin="16,42,0,0" VerticalAlignment="Top" Width="135"/>
+        <Label Content="Metoda" HorizontalAlignment="Left" Height="26" Margin="568,52,0,0" VerticalAlignment="Top" Width="55"/>
+        <ComboBox x:Name="SelectMethod" Width="127" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="628,56,0,0" SelectionChanged="SelectMethod_SelectionChanged" SelectedIndex="0" >
+            <ComboBoxItem Content="1"/>
+            <ComboBoxItem Content="2"/>
+            <ComboBoxItem Content="3"/>
+        </ComboBox>
     </Grid>
 </Window>

@@ -31,7 +31,7 @@ namespace AIFocusStacking.Services
 			return alignedImage;
 		}
 
-		public ServiceResult RunFocusStacking(IEnumerable<string> photos, bool alignment, bool gauss, int laplaceSize, int gaussSize, bool takeAll, int maskSize)
+		public ServiceResult RunFocusStacking(IEnumerable<string> photos, bool alignment, bool gauss, int laplaceSize, int gaussSize, bool takeAll, int maskSize, string method)
 		{
 			ServiceResult serviceResult = new ServiceResult();
 			try

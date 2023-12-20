@@ -22,6 +22,7 @@ namespace AIFocusStacking.Wpf
 		private int gaussSize;
 		private int laplaceSize;
 		private int maskSize;
+		private string method;
 		public MainWindow(IPhotoRepositoryService photoRepository, IConsoleCommandsService commandsService, IFocusStackingService focusStackingService)
 		{
 			_photoRepository = photoRepository;
@@ -63,7 +64,7 @@ namespace AIFocusStacking.Wpf
 		{
 			IEnumerable<string> photos = _photoRepository.GetAll();
 			_commandsService.RunModel();
-			_focusStackingService.RunFocusStacking(photos, (bool)alignment, (bool)gauss, laplaceSize, gaussSize, (bool)takeAll, maskSize);
+			_focusStackingService.RunFocusStacking(photos, (bool)alignment, (bool)gauss, laplaceSize, gaussSize, (bool)takeAll, maskSize, method);
 			ObjectsWindow objectsWindow = new ObjectsWindow();
 			objectsWindow.Show();
 
@@ -100,6 +101,12 @@ namespace AIFocusStacking.Wpf
 		{
 			if (MaskSize.Text.Length > 0)
 				maskSize = Convert.ToInt32(MaskSize.Text);
+		}
+
+		private void SelectMethod_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			ComboBoxItem selectedItem = (ComboBoxItem)SelectMethod.SelectedItem;
+			method = selectedItem.Content.ToString();
 		}
 	}
 
