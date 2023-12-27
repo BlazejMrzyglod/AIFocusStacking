@@ -25,11 +25,11 @@ namespace AIFocusStacking.Services
                 IEnumerable<string> photos = _photoRepository.GetAll();
                 ProcessStartInfo start = new ProcessStartInfo();
                 string script = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\demo\\demo.py";
-                string configFile = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\configs\\COCO-InstanceSegmentation\\mask_rcnn_X_101_32x8d_FPN_3x.yaml";//  \\projects\\PointRend\\configs\\InstanceSegmentation\\pointrend_rcnn_X_101_32x8d_FPN_3x_coco.yaml";
+                string configFile = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\configs\\COCO-PanopticSegmentation\\panoptic_fpn_R_101_3x.yaml"; //\\COCO-InstanceSegmentation\\mask_rcnn_X_101_32x8d_FPN_3x.yaml";//  \\projects\\PointRend\\configs\\InstanceSegmentation\\pointrend_rcnn_X_101_32x8d_FPN_3x_coco.yaml";
 
 				Directory.CreateDirectory(outputDirectory);
                 string options = "MODEL.DEVICE cpu";
-                string weights = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\demo\\model_final_2d9806.pkl";//model_final_ba17b9.pkl";
+                string weights = "model_final_cafdb1.pkl";//"..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\demo\\model_final_2d9806.pkl";//model_final_ba17b9.pkl";
 
 				start.FileName = "CMD.exe";
                 start.Arguments = $"/C python {script} --config-file {configFile} --input {string.Join(" ", photos)} --output {outputDirectory} --opts {options} MODEL.WEIGHTS {weights}";

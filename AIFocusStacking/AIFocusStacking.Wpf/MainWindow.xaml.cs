@@ -14,7 +14,6 @@ namespace AIFocusStacking.Wpf
 	public partial class MainWindow : System.Windows.Window
 	{
 		protected readonly IPhotoRepositoryService _photoRepository;
-		protected readonly IConsoleCommandsService _commandsService;
 		protected readonly IFocusStackingService _focusStackingService;
 		private bool? alignment;
 		private bool? gauss;
@@ -23,10 +22,9 @@ namespace AIFocusStacking.Wpf
 		private int laplaceSize;
 		private int maskSize;
 		private string method;
-		public MainWindow(IPhotoRepositoryService photoRepository, IConsoleCommandsService commandsService, IFocusStackingService focusStackingService)
+		public MainWindow(IPhotoRepositoryService photoRepository, IFocusStackingService focusStackingService)
 		{
 			_photoRepository = photoRepository;
-			_commandsService = commandsService;
 			InitializeComponent();
 			alignment = Alignment.IsChecked;
 			gauss = Gauss.IsChecked;
@@ -63,10 +61,9 @@ namespace AIFocusStacking.Wpf
 		private void RunFocusStacking_Click(object sender, RoutedEventArgs e)
 		{
 			IEnumerable<string> photos = _photoRepository.GetAll();
-			_commandsService.RunModel();
 			_focusStackingService.RunFocusStacking(photos, (bool)alignment, (bool)gauss, laplaceSize, gaussSize, (bool)takeAll, maskSize, method);
-			ObjectsWindow objectsWindow = new ObjectsWindow();
-			objectsWindow.Show();
+			/*ObjectsWindow objectsWindow = new ObjectsWindow();
+			objectsWindow.Show();*/
 
 		}
 
