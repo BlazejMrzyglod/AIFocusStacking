@@ -30,6 +30,7 @@ namespace AIFocusStacking.Wpf
             services.AddScoped(typeof(IConsoleCommandsService), typeof(ConsoleCommandsService));
             services.AddScoped(typeof(IFocusStackingService), typeof(FocusStackingService));
 			services.AddScoped(typeof(IInstanceSegmentationService), typeof(InstanceSegmentationService));
+			services.AddScoped(typeof(IPanopticSegmentationService), typeof(PanopticSegmentationService));
 		}
         private void OnStartup(object sender, StartupEventArgs e)
         {

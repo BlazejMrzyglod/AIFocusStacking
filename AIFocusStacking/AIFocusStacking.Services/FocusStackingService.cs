@@ -12,7 +12,12 @@ namespace AIFocusStacking.Services
 	public class FocusStackingService : IFocusStackingService
 	{
 		protected readonly IInstanceSegmentationService _instanceSegmentationService;
-		public FocusStackingService(IInstanceSegmentationService instanceSegmentationService) { _instanceSegmentationService = instanceSegmentationService; }
+		protected readonly IPanopticSegmentationService _panopticSegmentationService;
+		public FocusStackingService(IInstanceSegmentationService instanceSegmentationService, IPanopticSegmentationService panopticSegmentationService) 
+		{ 
+			_instanceSegmentationService = instanceSegmentationService; 
+			_panopticSegmentationService = panopticSegmentationService; 
+		}
 		private Mat AlignImages(Mat referenceImage, Mat currentImage)
 		{
 			Mat grayReference = new Mat();
@@ -59,7 +64,7 @@ namespace AIFocusStacking.Services
 						alignedImages.Add(currentImage);
 				}
 				Mat matGauss = new Mat();
-				
+
 				for (int i = 0; i < photos.Count(); i++)
 				{
 					if (gauss)
@@ -74,9 +79,13 @@ namespace AIFocusStacking.Services
 
 				}
 
-				if(method == "2")
+				if (method == "2")
 				{
 					_instanceSegmentationService.RunInstanceSegmentation(photos, alignedImages, laplacedImages);
+				}
+				else if (method == "3")
+				{
+					_panopticSegmentationService.RunPanopticSegmentation(photos, alignedImages, laplacedImages);
 				}
 
 				Mat result = alignedImages.First().Clone();

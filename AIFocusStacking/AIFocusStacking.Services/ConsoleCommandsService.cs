@@ -35,7 +35,7 @@ namespace AIFocusStacking.Services
 				}
                 else 
                 {
-                    configFile = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\configs\\COCO - PanopticSegmentation\\panoptic_fpn_R_101_3x.yaml";
+                    configFile = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\configs\\COCO-PanopticSegmentation\\panoptic_fpn_R_101_3x.yaml";
 					weights = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\demo\\model_final_cafdb1.pkl";
 				}
 
