@@ -14,7 +14,7 @@ namespace AIFocusStacking.Services
 		public InstanceSegmentationService(IConsoleCommandsService commandsService) { _commandsService = commandsService; }
 		public void RunInstanceSegmentation(IEnumerable<string> photos, List<Mat> alignedImages, List<Mat> laplacedImages)
 		{
-			_commandsService.RunModel();
+			_commandsService.RunModel("2");
 			List<List<int>> intensities = new List<List<int>>();
 			GetIntensities(photos, alignedImages, laplacedImages, intensities);
 			ChooseBestMasks(photos, laplacedImages, intensities);
