@@ -105,9 +105,9 @@ namespace AIFocusStacking.Services
 						Mask.At<Vec3b>(segments[j][k].X, segments[j][k].Y) = new Vec3b(255,255,255);
 						
 					}
-					for (int k = boxes[j].Left; k <= boxes[j].Right; k++)
+					for (int k = boxes[j].Left + 1; k < boxes[j].Right; k++)
 					{
-						for (int l = boxes[j].Top; l <= boxes[j].Bottom; l++)
+						for (int l = boxes[j].Top + 1; l < boxes[j].Bottom; l++)
 						{
 							if (Mask.At<byte>(k, l) == 255)
 							{
