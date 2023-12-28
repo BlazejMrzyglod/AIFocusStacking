@@ -23,7 +23,15 @@ namespace AIFocusStacking.Services
 
 		private static void ChooseBestMasks(IEnumerable<string> photos, List<Mat> laplacedImages, List<List<int>> intensities)
 		{
-			for (int i = 0; i < intensities.First().Count(); i++)
+			int segmentsAmount = intensities.First().Count();
+			for (int i = 1; i < intensities.Count; i++)
+			{
+				if (intensities[i].Count != segmentsAmount)
+				{
+					throw new Exception("Różne liczby segmentów");
+				}
+			}
+			for (int i = 0; i < segmentsAmount; i++)
 			{
 				int maxMaskIntensity = 0;
 				int index = 0;
