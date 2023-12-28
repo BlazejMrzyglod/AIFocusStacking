@@ -33,6 +33,32 @@ namespace AIFocusStacking.Services
 				}
 				List<Point> segment = new List<Point>();
 				JArray segmentsJson = JArray.Parse(File.ReadAllText($"panoptic{photos.ToArray()[index].Split('\\').Last()}.json"));
+
+				for (int j = 0; j < segmentsJson.Count; j++)
+				{
+					for (int k = 0; k < segmentsJson[0].Count(); k++)
+					{
+						if ((int)segmentsJson[j][k] == 0)
+						{
+							if (k == 0)
+							{
+								if (j == 0)
+								{
+									segmentsJson[j][k] = 1;
+								}
+								else
+								{
+									segmentsJson[j][k] = segmentsJson[j - 1][segmentsJson[0].Count() - 1];
+								}
+							}
+							else
+							{
+								segmentsJson[j][k] = segmentsJson[j][k - 1];
+							}
+						}
+					}
+				}
+
 				for (int k = 0; k < segmentsJson.Count; k++)
 				{
 					for (int l = 0; l < segmentsJson[0].Count(); l++)
@@ -76,15 +102,38 @@ namespace AIFocusStacking.Services
 				List<Rect> boxes = new List<Rect>();
 				JArray segmentsJson = JArray.Parse(File.ReadAllText($"panoptic{photos.ToArray()[i].Split('\\').Last()}.json"));
 				JArray segmentsInfo = JArray.Parse(File.ReadAllText($"panoptic_seg_info{photos.ToArray()[i].Split('\\').Last()}.json"));
-	
+				for (int j = 0; j < segmentsJson.Count; j++)
+				{
+					for (int k = 0; k < segmentsJson[0].Count(); k++)
+					{
+						if ((int)segmentsJson[j][k] == 0)
+						{
+							if (k == 0)
+							{
+								if (j == 0)
+								{
+									segmentsJson[j][k] = 1;
+								}
+								else
+								{
+									segmentsJson[j][k] = segmentsJson[j - 1][segmentsJson[0].Count() - 1];
+								}
+							}
+							else
+							{
+								segmentsJson[j][k] = segmentsJson[j][k - 1];
+							}
+						}
+					}
+				}
 				for (int j = 1; j <= segmentsInfo.Count; j++)
 				{
 					List<Point> currentSegment = new List<Point>();
 					for (int k = 0; k < segmentsJson.Count; k++)
 					{
 						for(int l = 0; l < segmentsJson[0].Count(); l++)
-						{
-							if((int)segmentsJson[k][l] == j)
+						{							
+							if ((int)segmentsJson[k][l] == j)
 							{
 								currentSegment.Add(new Point(k, l));
 							}
