@@ -27,16 +27,19 @@ namespace AIFocusStacking.Services
                 string script = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\demo\\demo.py";
                 string configFile;
                 string weights;
+                string confidence;
 
 				if (method == "2")
                 {
-					configFile = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\configs\\COCO-InstanceSegmentation\\mask_rcnn_X_101_32x8d_FPN_3x.yaml";
-					weights = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\demo\\model_final_2d9806.pkl";
+                    configFile = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\configs\\Misc\\cascade_mask_rcnn_X_152_32x8d_FPN_IN5k_gn_dconv.yaml";//\\COCO-InstanceSegmentation\\mask_rcnn_X_101_32x8d_FPN_3x.yaml";
+                    weights = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\demo\\model_0039999_e76410.pkl";// model_final_2d9806.pkl";
+                    confidence = "0.5";
 				}
                 else 
                 {
-                    configFile = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\configs\\COCO-PanopticSegmentation\\panoptic_fpn_R_101_3x.yaml";
-					weights = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\demo\\model_final_cafdb1.pkl";
+                    configFile = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\configs\\Misc\\panoptic_fpn_R_101_dconv_cascade_gn_3x.yaml";//\\COCO-PanopticSegmentation\\panoptic_fpn_R_101_3x.yaml";
+                    weights = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\demo\\model_final_be35db.pkl";// model_final_cafdb1.pkl";
+                    confidence = "1";
 				}
 
 				Directory.CreateDirectory(outputDirectory);
@@ -44,7 +47,7 @@ namespace AIFocusStacking.Services
                 
 
 				start.FileName = "CMD.exe";
-                start.Arguments = $"/C python {script} --config-file {configFile} --input {string.Join(" ", photos)} --output {outputDirectory} --opts {options} MODEL.WEIGHTS {weights}";
+                start.Arguments = $"/C python {script} --config-file {configFile} --input {string.Join(" ", photos)} --output {outputDirectory} --confidence-threshold {confidence} --opts {options} MODEL.WEIGHTS {weights}";
                 start.UseShellExecute = false;
                 start.RedirectStandardOutput = true;
                 using (Process process = Process.Start(start))
