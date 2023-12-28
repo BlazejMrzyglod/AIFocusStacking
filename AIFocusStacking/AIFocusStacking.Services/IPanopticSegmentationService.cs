@@ -1,14 +1,9 @@
-﻿using OpenCvSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AIFocusStacking.Models;
 
 namespace AIFocusStacking.Services
 {
 	public interface IPanopticSegmentationService
 	{
-		void RunPanopticSegmentation(IEnumerable<string> photos, List<Mat> alignedImages, List<Mat> laplacedImages);
+		void RunPanopticSegmentation(List<Photo> photos);
 	}
 }

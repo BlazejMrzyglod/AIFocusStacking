@@ -1,10 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using AIFocusStacking.Models;
+using Newtonsoft.Json.Linq;
 using OpenCvSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AIFocusStacking.Services
 {
@@ -12,76 +8,76 @@ namespace AIFocusStacking.Services
 	{
 		protected readonly IConsoleCommandsService _commandsService;
 		public InstanceSegmentationService(IConsoleCommandsService commandsService) { _commandsService = commandsService; }
-		public void RunInstanceSegmentation(IEnumerable<string> photos, List<Mat> alignedImages, List<Mat> laplacedImages)
+		public void RunInstanceSegmentation(List<Photo> photos)
 		{
 			_commandsService.RunModel("2");
-			List<List<int>> intensities = new List<List<int>>();
-			GetIntensities(photos, alignedImages, laplacedImages, intensities);
-			ChooseBestMasks(photos, laplacedImages, intensities);
+			List<List<int>> intensities = new();
+			GetIntensities(photos, intensities);
+			ChooseBestMasks(photos, intensities);
 		}
 
-		private static void ChooseBestMasks(IEnumerable<string> photos, List<Mat> laplacedImages, List<List<int>> intensities)
+		private static void ChooseBestMasks(List<Photo> photos, List<List<int>> intensities)
 		{
-			for (int i = 0; i < intensities.First().Count(); i++)
+			for (int i = 0; i < intensities.First().Count; i++)
 			{
 				int maxMaskIntensity = 0;
 				int index = 0;
-				for (int j = 0; j < photos.Count(); j++)
+				for (int j = 0; j < photos.Count; j++)
 				{
 					if (intensities[j][i] > maxMaskIntensity) { maxMaskIntensity = intensities[j][i]; index = j; }
 				}
-				List<List<Point>> contours = new List<List<Point>>();
-				List<Point> currentMask = new List<Point>();
+				List<List<Point>> contours = new();
+				List<Point> currentMask = new();
 
-				JArray masksJson = JArray.Parse(File.ReadAllText($"masks{photos.ToArray()[index].Split('\\').Last()}.json"));
+				JArray masksJson = JArray.Parse(File.ReadAllText($"masks{photos[index].Path!.Split('\\').Last()}.json"));
 				foreach (var points in masksJson[i])
 				{
-					currentMask.Add(new Point((int)points[0][0], (int)points[0][1]));
+					currentMask.Add(new Point((int)points[0]![0]!, (int)points[0]![1]!));
 				}
 				contours.Add(currentMask);
-				for (int j = 0; j < laplacedImages.Count(); j++)
+				for (int j = 0; j < photos.Count; j++)
 				{
 					if (j == index)
 					{
-						Cv2.DrawContours(laplacedImages[j], contours, -1, new Scalar(255, 255, 255), -1);
+						Cv2.DrawContours(photos[j].MatrixAfterLaplace!, contours, -1, new Scalar(255, 255, 255), -1);
 					}
 					else
 					{
-						Cv2.DrawContours(laplacedImages[j], contours, -1, new Scalar(0, 0, 0), -1);
+						Cv2.DrawContours(photos[j].MatrixAfterLaplace!, contours, -1, new Scalar(0, 0, 0), -1);
 					}
-					laplacedImages[j].SaveImage($"laplace{j}.jpg");
+					photos[j].MatrixAfterLaplace!.SaveImage($"laplace{j}.jpg");
 				}
 
 			}
 		}
 
-		private static void GetIntensities(IEnumerable<string> photos, List<Mat> alignedImages, List<Mat> laplacedImages, List<List<int>> intensities)
+		private static void GetIntensities(List<Photo> photos, List<List<int>> intensities)
 		{
-			for (int i = 0; i < photos.Count(); i++)
+			for (int i = 0; i < photos.Count; i++)
 			{
-				Mat imageToMask = alignedImages.ToArray()[i].Clone();
+				Mat imageToMask = photos[i].Matrix!.Clone();
 
-				List<List<Point>> contours = new List<List<Point>>();
-				List<Rect> boxes = new List<Rect>();
-				JArray masksJson = JArray.Parse(File.ReadAllText($"masks{photos.ToArray()[i].Split('\\').Last()}.json"));
+				List<List<Point>> contours = new();
+				List<Rect> boxes = new();
+				JArray masksJson = JArray.Parse(File.ReadAllText($"masks{photos[i].Path!.Split('\\').Last()}.json"));
 				foreach (var mask in masksJson)
 				{
-					List<Point> currentMask = new List<Point>();
+					List<Point> currentMask = new();
 
 					foreach (var points in mask)
 					{
-						currentMask.Add(new Point((int)points[0][0], (int)points[0][1]));
+						currentMask.Add(new Point((int)points[0]![0]!, (int)points[0]![1]!));
 					}
 					boxes.Add(Cv2.BoundingRect(currentMask));
 					contours.Add(currentMask);
 				}
 
-				List<int> currentIntensities = new List<int>();
+				List<int> currentIntensities = new();
 
 				for (int j = 0; j < contours.Count; j++)
 				{
 					int maskIntensity = 0;
-					Mat Mask = new Mat(imageToMask.Size(), imageToMask.Type(), new Scalar(0, 0, 0));
+					Mat Mask = new(imageToMask.Size(), imageToMask.Type(), new Scalar(0, 0, 0));
 					Cv2.DrawContours(Mask, contours.GetRange(j, 1), -1, new Scalar(255, 255, 255), -1);
 					for (int k = boxes[j].Top; k <= boxes[j].Bottom; k++)
 					{
@@ -89,7 +85,7 @@ namespace AIFocusStacking.Services
 						{
 							if (Mask.At<byte>(k, l) == 255)
 							{
-								maskIntensity += laplacedImages[i].At<byte>(k, l);
+								maskIntensity += photos[j].MatrixAfterLaplace!.At<byte>(k, l);
 							}
 						}
 					}

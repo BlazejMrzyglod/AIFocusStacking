@@ -1,11 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using AIFocusStacking.Models;
+using Newtonsoft.Json.Linq;
 using OpenCvSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static OpenCvSharp.FileStorage;
 
 namespace AIFocusStacking.Services
 {
@@ -13,17 +8,17 @@ namespace AIFocusStacking.Services
 	{
 		protected readonly IConsoleCommandsService _commandsService;
 		public PanopticSegmentationService(IConsoleCommandsService commandsService) { _commandsService = commandsService; }
-		public void RunPanopticSegmentation(IEnumerable<string> photos, List<Mat> alignedImages, List<Mat> laplacedImages)
+		public void RunPanopticSegmentation(List<Photo> photos)
 		{
 			_commandsService.RunModel("3");
-			List<List<int>> intensities = new List<List<int>>();
-			GetIntensities(photos, alignedImages, laplacedImages, intensities);
-			ChooseBestMasks(photos, laplacedImages, intensities);
+			List<List<int>> intensities = new();
+			GetIntensities(photos, intensities);
+			ChooseBestMasks(photos, intensities);
 		}
 
-		private static void ChooseBestMasks(IEnumerable<string> photos, List<Mat> laplacedImages, List<List<int>> intensities)
+		private static void ChooseBestMasks(List<Photo> photos, List<List<int>> intensities)
 		{
-			int segmentsAmount = intensities.First().Count();
+			int segmentsAmount = intensities.First().Count;
 			for (int i = 1; i < intensities.Count; i++)
 			{
 				if (intensities[i].Count != segmentsAmount)
@@ -35,18 +30,18 @@ namespace AIFocusStacking.Services
 			{
 				int maxMaskIntensity = 0;
 				int index = 0;
-				for (int j = 0; j < photos.Count(); j++)
+				for (int j = 0; j < photos.Count; j++)
 				{
 					if (intensities[j][i] > maxMaskIntensity) { maxMaskIntensity = intensities[j][i]; index = j; }
 				}
-				List<Point> segment = new List<Point>();
-				JArray segmentsJson = JArray.Parse(File.ReadAllText($"panoptic{photos.ToArray()[index].Split('\\').Last()}.json"));
+				List<Point> segment = new();
+				JArray segmentsJson = JArray.Parse(File.ReadAllText($"panoptic{photos[index].Path!.Split('\\').Last()}.json"));
 
 				for (int j = 0; j < segmentsJson.Count; j++)
 				{
 					for (int k = 0; k < segmentsJson[0].Count(); k++)
 					{
-						if ((int)segmentsJson[j][k] == 0)
+						if ((int)segmentsJson[j]![k]! == 0)
 						{
 							if (k == 0)
 							{
@@ -71,50 +66,50 @@ namespace AIFocusStacking.Services
 				{
 					for (int l = 0; l < segmentsJson[0].Count(); l++)
 					{
-						if ((int)segmentsJson[k][l] == i + 1)
+						if ((int)segmentsJson[k]![l]! == i + 1)
 						{
 							segment.Add(new Point(k, l));
 						}
 					}
 				}
 
-				for (int j = 0; j < laplacedImages.Count(); j++)
+				for (int j = 0; j < photos.Count; j++)
 				{
 					if (j == index)
 					{
 						for (int k = 0; k < segment.Count; k++)
 						{
-							laplacedImages[j].At<byte>(segment[k].X, segment[k].Y) = 255;
+							photos[j].MatrixAfterLaplace!.At<byte>(segment[k].X, segment[k].Y) = 255;
 						}
 					}
 					else
 					{
 						for (int k = 0; k < segment.Count; k++)
 						{
-							laplacedImages[j].At<byte>(segment[k].X, segment[k].Y) = 0;
+							photos[j].MatrixAfterLaplace!.At<byte>(segment[k].X, segment[k].Y) = 0;
 						}
 					}
-					laplacedImages[j].SaveImage($"laplace{j}.jpg");
+					photos[j].MatrixAfterLaplace!.SaveImage($"laplace{j}.jpg");
 				}
 			}
 			
 		}
 
-		private static void GetIntensities(IEnumerable<string> photos, List<Mat> alignedImages, List<Mat> laplacedImages, List<List<int>> intensities)
+		private static void GetIntensities(List<Photo> photos, List<List<int>> intensities)
 		{
-			for (int i = 0; i < photos.Count(); i++)
+			for (int i = 0; i < photos.Count; i++)
 			{
-				Mat imageToMask = alignedImages.ToArray()[i].Clone();
+				Mat imageToMask = photos[i].Matrix!.Clone();
 
-				List<List<Point>> segments = new List<List<Point>>();
-				List<Rect> boxes = new List<Rect>();
-				JArray segmentsJson = JArray.Parse(File.ReadAllText($"panoptic{photos.ToArray()[i].Split('\\').Last()}.json"));
-				JArray segmentsInfo = JArray.Parse(File.ReadAllText($"panoptic_seg_info{photos.ToArray()[i].Split('\\').Last()}.json"));
+				List<List<Point>> segments = new();
+				List<Rect> boxes = new();
+				JArray segmentsJson = JArray.Parse(File.ReadAllText($"panoptic{photos[i].Path!.Split('\\').Last()}.json"));
+				JArray segmentsInfo = JArray.Parse(File.ReadAllText($"panoptic_seg_info{photos[i].Path!.Split('\\').Last()}.json"));
 				for (int j = 0; j < segmentsJson.Count; j++)
 				{
 					for (int k = 0; k < segmentsJson[0].Count(); k++)
 					{
-						if ((int)segmentsJson[j][k] == 0)
+						if ((int)segmentsJson[j]![k]! == 0)
 						{
 							if (k == 0)
 							{
@@ -136,12 +131,12 @@ namespace AIFocusStacking.Services
 				}
 				for (int j = 1; j <= segmentsInfo.Count; j++)
 				{
-					List<Point> currentSegment = new List<Point>();
+					List<Point> currentSegment = new();
 					for (int k = 0; k < segmentsJson.Count; k++)
 					{
 						for(int l = 0; l < segmentsJson[0].Count(); l++)
 						{							
-							if ((int)segmentsJson[k][l] == j)
+							if ((int)segmentsJson[k]![l]! == j)
 							{
 								currentSegment.Add(new Point(k, l));
 							}
@@ -151,12 +146,12 @@ namespace AIFocusStacking.Services
 					segments.Add(currentSegment);
 				}
 
-				List<int> currentIntensities = new List<int>();
+				List<int> currentIntensities = new();
 
 				for (int j = 0; j < segments.Count; j++)
 				{
 					int maskIntensity = 0;
-					Mat Mask = new Mat(imageToMask.Size(), imageToMask.Type(), new Scalar(0, 0, 0));
+					Mat Mask = new(imageToMask.Size(), imageToMask.Type(), new Scalar(0, 0, 0));
 					for (int k = 0; k < segments[j].Count; k++)
 					{
 						Mask.At<Vec3b>(segments[j][k].X, segments[j][k].Y) = new Vec3b(255,255,255);
@@ -168,7 +163,7 @@ namespace AIFocusStacking.Services
 						{
 							if (Mask.At<byte>(k, l) == 255)
 							{
-								maskIntensity += laplacedImages[i].At<byte>(k, l);
+								maskIntensity += photos[i].MatrixAfterLaplace!.At<byte>(k, l);
 							}
 						}
 					}

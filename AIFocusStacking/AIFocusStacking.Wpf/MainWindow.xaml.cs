@@ -21,7 +21,7 @@ namespace AIFocusStacking.Wpf
 		private int gaussSize;
 		private int laplaceSize;
 		private int maskSize;
-		private string method;
+		private string? method;
 		public MainWindow(IPhotoRepositoryService photoRepository, IFocusStackingService focusStackingService)
 		{
 			_photoRepository = photoRepository;
@@ -38,8 +38,10 @@ namespace AIFocusStacking.Wpf
 		//Funkcja umożliwająca wybranie zdjęć
 		private void ChooseImagesButton_Click(object sender, RoutedEventArgs e)
 		{
-			OpenFileDialog fileDialog = new OpenFileDialog();
-			fileDialog.Multiselect = true;
+			OpenFileDialog fileDialog = new()
+			{
+				Multiselect = true
+			};
 			if (fileDialog.ShowDialog() == true)
 				_photoRepository.CreateMultiple(fileDialog.FileNames);
 			foreach (var file in fileDialog.FileNames)
@@ -61,7 +63,7 @@ namespace AIFocusStacking.Wpf
 		private void RunFocusStacking_Click(object sender, RoutedEventArgs e)
 		{
 			IEnumerable<string> photos = _photoRepository.GetAll();
-			_focusStackingService.RunFocusStacking(photos, (bool)alignment, (bool)gauss, laplaceSize, gaussSize, (bool)takeAll, maskSize, method);
+			_focusStackingService.RunFocusStacking(photos, (bool)alignment!, (bool)gauss!, laplaceSize, gaussSize, (bool)takeAll!, maskSize, method!);
 			/*ObjectsWindow objectsWindow = new ObjectsWindow();
 			objectsWindow.Show();*/
 

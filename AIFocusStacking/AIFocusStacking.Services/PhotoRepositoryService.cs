@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AIFocusStacking.Services
+﻿namespace AIFocusStacking.Services
 {
     public class PhotoRepositoryService : IPhotoRepositoryService
     {
         protected string _repositoryFolder = "images";
         public ServiceResult Create(string photo)
         {
-            ServiceResult result = new ServiceResult();
+            ServiceResult result = new();
             try
             {
                 Directory.CreateDirectory(_repositoryFolder);
@@ -28,7 +22,7 @@ namespace AIFocusStacking.Services
 
         public ServiceResult CreateMultiple(string[] photos)
         {
-            ServiceResult result = new ServiceResult();
+            ServiceResult result = new();
             try
             {
                 Directory.CreateDirectory(_repositoryFolder);
@@ -50,7 +44,7 @@ namespace AIFocusStacking.Services
 
         public ServiceResult Delete(string photo)
         {
-            ServiceResult result = new ServiceResult();
+            ServiceResult result = new();
             try
             {
                 File.Delete(_repositoryFolder + "\\" + photo.Split("\\").Last());
@@ -66,7 +60,7 @@ namespace AIFocusStacking.Services
 
         public ServiceResult DeleteMultiple(string[] photos)
         {
-            ServiceResult result = new ServiceResult();
+            ServiceResult result = new();
             try
             {
                 foreach (var photo in photos)
@@ -85,7 +79,7 @@ namespace AIFocusStacking.Services
 
         public ServiceResult DeleteAll()
         {
-            ServiceResult result = new ServiceResult();
+            ServiceResult result = new();
             try
             {
                 Directory.Delete(_repositoryFolder, true);
@@ -100,7 +94,7 @@ namespace AIFocusStacking.Services
         }
         public ServiceResult Edit(string photo)
         {
-            ServiceResult result = new ServiceResult();
+            ServiceResult result = new();
             try
             {
                 Directory.CreateDirectory(_repositoryFolder);
@@ -118,7 +112,7 @@ namespace AIFocusStacking.Services
 
         public ServiceResult EditMultiple(string[] photos)
         {
-            ServiceResult result = new ServiceResult();
+            ServiceResult result = new();
             try
             {
                 foreach (var photo in photos)
@@ -145,12 +139,12 @@ namespace AIFocusStacking.Services
 
         public string GetSingle(string photo)
         {
-            return Directory.GetFiles(_repositoryFolder).Where(r => r == photo).SingleOrDefault();
+            return Directory.GetFiles(_repositoryFolder).Where(r => r == photo).SingleOrDefault()!;
         }
 
         public ServiceResult ChangeDirectory(string directory)
         {
-            ServiceResult result = new ServiceResult();
+            ServiceResult result = new();
             try
             {
                 _repositoryFolder = directory;

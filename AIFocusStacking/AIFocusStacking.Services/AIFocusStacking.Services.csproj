@@ -11,4 +11,8 @@
     <PackageReference Include="OpenCvSharp4.Windows" Version="4.8.0.20230708" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AIFocusStacking.Models\AIFocusStacking.Models.csproj" />
+  </ItemGroup>
+
 </Project>

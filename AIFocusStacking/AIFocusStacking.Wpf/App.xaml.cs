@@ -1,12 +1,5 @@
 ﻿using AIFocusStacking.Services;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace AIFocusStacking.Wpf
@@ -16,14 +9,14 @@ namespace AIFocusStacking.Wpf
     /// </summary>
     public partial class App : Application
     {
-        private ServiceProvider serviceProvider;
+        private readonly ServiceProvider serviceProvider;
         public App()
         {
-            ServiceCollection services = new ServiceCollection();
+            ServiceCollection services = new();
             ConfigureServices(services);
             serviceProvider = services.BuildServiceProvider();
         }
-        private void ConfigureServices(ServiceCollection services)
+        private static void ConfigureServices(ServiceCollection services)
         {
             services.AddSingleton<MainWindow>();
             services.AddScoped(typeof(IPhotoRepositoryService), typeof(PhotoRepositoryService));
@@ -35,12 +28,12 @@ namespace AIFocusStacking.Wpf
         private void OnStartup(object sender, StartupEventArgs e)
         {
             var mainWindow = serviceProvider.GetService<MainWindow>();
-            mainWindow.Show();
+            mainWindow!.Show();
         }
         protected override void OnExit(ExitEventArgs e)
         {
-            IPhotoRepositoryService photoRepositoryService = serviceProvider.GetService<IPhotoRepositoryService>();
-            IConsoleCommandsService consoleCommandsService = serviceProvider.GetService<IConsoleCommandsService>();
+            IPhotoRepositoryService photoRepositoryService = serviceProvider.GetService<IPhotoRepositoryService>()!;
+            IConsoleCommandsService consoleCommandsService = serviceProvider.GetService<IConsoleCommandsService>()!;
             photoRepositoryService.DeleteAll();
             consoleCommandsService.ClearOutputDirectory();
             base.OnExit(e);

@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AIFocusStacking.Wpf", "AIFo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AIFocusStacking.Services", "AIFocusStacking.Services\AIFocusStacking.Services.csproj", "{4527AEE4-765E-4803-8BD2-A39DD879455A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIFocusStacking.Models", "AIFocusStacking.Models\AIFocusStacking.Models.csproj", "{02238B38-D912-42BD-8D3C-F5D0EEE2DDCB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4527AEE4-765E-4803-8BD2-A39DD879455A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4527AEE4-765E-4803-8BD2-A39DD879455A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4527AEE4-765E-4803-8BD2-A39DD879455A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02238B38-D912-42BD-8D3C-F5D0EEE2DDCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02238B38-D912-42BD-8D3C-F5D0EEE2DDCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02238B38-D912-42BD-8D3C-F5D0EEE2DDCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02238B38-D912-42BD-8D3C-F5D0EEE2DDCB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

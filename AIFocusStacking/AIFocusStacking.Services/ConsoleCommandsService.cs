@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 
 namespace AIFocusStacking.Services
 {
@@ -19,11 +14,11 @@ namespace AIFocusStacking.Services
         }
         public ServiceResult RunModel(string method)
         {
-            ServiceResult result = new ServiceResult();
+            ServiceResult result = new();
             try
             {
                 IEnumerable<string> photos = _photoRepository.GetAll();
-                ProcessStartInfo start = new ProcessStartInfo();
+                ProcessStartInfo start = new();
                 string script = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\demo\\demo.py";
                 string configFile;
                 string weights;
@@ -50,14 +45,12 @@ namespace AIFocusStacking.Services
                 start.Arguments = $"/C python {script} --config-file {configFile} --input {string.Join(" ", photos)} --output {outputDirectory} --confidence-threshold {confidence} --opts {options} MODEL.WEIGHTS {weights}";
                 start.UseShellExecute = false;
                 start.RedirectStandardOutput = true;
-                using (Process process = Process.Start(start))
+                using (Process process = Process.Start(start)!)
                 {
-                    using (StreamReader reader = process.StandardOutput)
-                    {
-                        string consoleResult = reader.ReadToEnd();
-                        Console.Write(consoleResult);
-                    }
-                }
+					using StreamReader reader = process!.StandardOutput;
+					string consoleResult = reader.ReadToEnd();
+					Console.Write(consoleResult);
+				}
                 //_photoRepository.DeleteMultiple(photos.ToArray());
                 result.Result = ServiceResultStatus.Succes;
             }
@@ -72,7 +65,7 @@ namespace AIFocusStacking.Services
 
         public ServiceResult ClearOutputDirectory()
         {
-            ServiceResult result = new ServiceResult();
+            ServiceResult result = new();
             try
             {
                 Directory.Delete(outputDirectory, true);
