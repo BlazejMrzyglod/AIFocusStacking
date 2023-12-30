@@ -11,12 +11,11 @@ namespace AIFocusStacking.Services
 		public void RunPanopticSegmentation(List<Photo> photos)
 		{
 			_commandsService.RunModel("3");
-			List<List<int>> intensities = new();
-			GetIntensities(photos, intensities);
-			ChooseBestMasks(photos, intensities);
+			GetIntensities(photos);
+			ChooseBestMasks(photos);
 		}
 
-		private static void ChooseBestMasks(List<Photo> photos, List<List<int>> intensities)
+		private static void ChooseBestMasks(List<Photo> photos)
 		{
 			int segmentsAmount = intensities.First().Count;
 			for (int i = 1; i < intensities.Count; i++)
@@ -95,82 +94,92 @@ namespace AIFocusStacking.Services
 			
 		}
 
-		private static void GetIntensities(List<Photo> photos, List<List<int>> intensities)
+		private static void GetIntensities(List<Photo> photos)
 		{
 			for (int i = 0; i < photos.Count; i++)
 			{
+				Photo photo = photos[i];
 				Mat imageToMask = photos[i].Matrix.Clone();
 
-				List<List<Point>> segments = new();
-				List<Rect> boxes = new();
-				JArray segmentsJson = JArray.Parse(File.ReadAllText($"panoptic_masks{photos[i].Path.Split('\\').Last()}.json"));
-				JArray segmentsInfo = JArray.Parse(File.ReadAllText($"panoptic_classes_{photos[i].Path.Split('\\').Last()}.json"));
-				for (int j = 0; j < segmentsJson.Count; j++)
+				JArray masksJson = JArray.Parse(File.ReadAllText($"panoptic_masks{photo.Path.Split('\\').Last()}.json"));
+				JArray classesJson = JArray.Parse(File.ReadAllText($"panoptic_classes_{photo.Path.Split('\\').Last()}.json"));
+
+				for (int j = 0; j < masksJson.Count; j++)
 				{
-					for (int k = 0; k < segmentsJson[0].Count(); k++)
+					for (int k = 0; k < masksJson[0].Count(); k++)
 					{
-						if ((int)segmentsJson[j]![k]! == 0)
+						if ((int)masksJson[j]![k]! == 0)
 						{
 							if (k == 0)
 							{
 								if (j == 0)
 								{
-									segmentsJson[j][k] = 1;
+									masksJson[j][k] = 1;
 								}
 								else
 								{
-									segmentsJson[j][k] = segmentsJson[j - 1][segmentsJson[0].Count() - 1];
+									masksJson[j][k] = masksJson[j - 1][masksJson[0].Count() - 1];
 								}
 							}
 							else
 							{
-								segmentsJson[j][k] = segmentsJson[j][k - 1];
+								masksJson[j][k] = masksJson[j][k - 1];
 							}
 						}
 					}
 				}
-				for (int j = 1; j <= segmentsInfo.Count; j++)
+
+				for (int j = 0; j <= classesJson.Count; j++)
 				{
-					List<Point> currentSegment = new();
-					for (int k = 0; k < segmentsJson.Count; k++)
+					List<Point> currentMask = new();
+					for (int k = 0; k < masksJson.Count; k++)
 					{
-						for(int l = 0; l < segmentsJson[0].Count(); l++)
+						for(int l = 0; l < masksJson[0].Count(); l++)
 						{							
-							if ((int)segmentsJson[k]![l]! == j)
+							if ((int)masksJson[k]![l]! == j)
 							{
-								currentSegment.Add(new Point(k, l));
+								currentMask.Add(new Point(k, l));
 							}
 						}
 					}
-					boxes.Add(Cv2.BoundingRect(currentSegment));
-					segments.Add(currentSegment);
+
+					Rect box = Cv2.BoundingRect(currentMask);
+
+					if (photo.DetectedObjects == null)
+					{
+						photo.DetectedObjects = new();
+					}
+
+					photo.DetectedObjects.Add(new DetectedObject(currentMask, box, (int)classesJson[j]));
 				}
 
-				List<int> currentIntensities = new();
-
-				for (int j = 0; j < segments.Count; j++)
+				for (int j = 0; j < photo.DetectedObjects!.Count; j++)
 				{
+					List<Point> mask = photo.DetectedObjects[j].Mask;
+					Rect box = photo.DetectedObjects[j].Box;
+
 					int maskIntensity = 0;
 					Mat Mask = new(imageToMask.Size(), imageToMask.Type(), new Scalar(0, 0, 0));
-					for (int k = 0; k < segments[j].Count; k++)
+
+					for (int k = 0; k < mask.Count; k++)
 					{
-						Mask.At<Vec3b>(segments[j][k].X, segments[j][k].Y) = new Vec3b(255,255,255);
+						Mask.At<Vec3b>(mask[k].X,mask[k].Y) = new Vec3b(255,255,255);
 						
 					}
-					for (int k = boxes[j].Left + 1; k < boxes[j].Right; k++)
+					for (int k = box.Left + 1; k < box.Right; k++)
 					{
-						for (int l = boxes[j].Top + 1; l < boxes[j].Bottom; l++)
+						for (int l = box.Top + 1; l < box.Bottom; l++)
 						{
 							if (Mask.At<byte>(k, l) == 255)
 							{
-								maskIntensity += photos[i].MatrixAfterLaplace!.At<byte>(k, l);
+								maskIntensity += photo.MatrixAfterLaplace!.At<byte>(k, l);
 							}
 						}
 					}
-					currentIntensities.Add(maskIntensity);
+
+					photo.DetectedObjects[j].Intensity = maskIntensity;
 				}
 
-				intensities.Add(currentIntensities);
 			}
 		}
 

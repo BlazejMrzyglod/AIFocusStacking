@@ -11,12 +11,11 @@ namespace AIFocusStacking.Services
 		public void RunInstanceSegmentation(List<Photo> photos)
 		{
 			_commandsService.RunModel("2");
-			List<List<int>> intensities = new();
-			GetIntensities(photos, intensities);
-			ChooseBestMasks(photos, intensities);
+			GetIntensities(photos);
+			ChooseBestMasks(photos);
 		}
 
-		private static void ChooseBestMasks(List<Photo> photos, List<List<int>> intensities)
+		private static void ChooseBestMasks(List<Photo> photos)
 		{
 			for (int i = 0; i < intensities.First().Count; i++)
 			{
@@ -51,37 +50,47 @@ namespace AIFocusStacking.Services
 			}
 		}
 
-		private static void GetIntensities(List<Photo> photos, List<List<int>> intensities)
+		private static void GetIntensities(List<Photo> photos)
 		{
 			for (int i = 0; i < photos.Count; i++)
 			{
-				Mat imageToMask = photos[i].Matrix.Clone();
+				Photo photo = photos[i];
+				Mat imageToMask = photo.Matrix.Clone();
 
-				List<List<Point>> contours = new();
-				List<Rect> boxes = new();
-				JArray masksJson = JArray.Parse(File.ReadAllText($"masks_{photos[i].Path.Split('\\').Last()}.json"));
-				foreach (var mask in masksJson)
+				JArray contoursJson = JArray.Parse(File.ReadAllText($"contours_{photo.Path.Split('\\').Last()}.json"));
+				JArray classesJson = JArray.Parse(File.ReadAllText($"classes_{photo.Path.Split('\\').Last()}.json"));
+
+				if (photo.DetectedObjects == null)
 				{
-					List<Point> currentMask = new();
-
-					foreach (var points in mask)
-					{
-						currentMask.Add(new Point((int)points[0]![0]!, (int)points[0]![1]!));
-					}
-					boxes.Add(Cv2.BoundingRect(currentMask));
-					contours.Add(currentMask);
+					photo.DetectedObjects = new();
 				}
 
-				List<int> currentIntensities = new();
-
-				for (int j = 0; j < contours.Count; j++)
+				for (int j = 0; j < contoursJson.Count; j++)
 				{
+					JToken? contour = contoursJson[j];
+					JToken? _class = classesJson[j];
+					List<Point> currentContour = new();
+
+					foreach (var points in contour)
+					{
+						currentContour.Add(new Point((int)points[0]![0]!, (int)points[0]![1]!));
+					}
+
+					Rect currentBox = Cv2.BoundingRect(currentContour);
+					photo.DetectedObjects!.Add(new DetectedObject(currentContour, currentBox, (int)_class));
+				}
+
+				for (int j = 0; j < photo.DetectedObjects!.Count; j++)
+				{
+					DetectedObject detectedObject = photo.DetectedObjects[j];
 					int maskIntensity = 0;
 					Mat Mask = new(imageToMask.Size(), imageToMask.Type(), new Scalar(0, 0, 0));
-					Cv2.DrawContours(Mask, contours.GetRange(j, 1), -1, new Scalar(255, 255, 255), -1);
-					for (int k = boxes[j].Top; k <= boxes[j].Bottom; k++)
+
+					Cv2.DrawContours(Mask, new List<List<Point>>() { detectedObject.Mask }, -1, new Scalar(255, 255, 255), -1);
+
+					for (int k = detectedObject.Box.Top; k <= detectedObject.Box.Bottom; k++)
 					{
-						for (int l = boxes[j].Left; l <= boxes[j].Right; l++)
+						for (int l = detectedObject.Box.Left; l <= detectedObject.Box.Right; l++)
 						{
 							if (Mask.At<byte>(k, l) == 255)
 							{
@@ -89,10 +98,8 @@ namespace AIFocusStacking.Services
 							}
 						}
 					}
-					currentIntensities.Add(maskIntensity);
+					detectedObject.Intensity = maskIntensity;
 				}
-
-				intensities.Add(currentIntensities);
 			}
 		}
 	}
