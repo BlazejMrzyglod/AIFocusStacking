@@ -41,7 +41,7 @@ namespace AIFocusStacking.Services
 			{
 				// Load the reference image
 				Mat referenceImage = new(photos.First());
-				_photos.Add(new Photo() { Path = photos.First(), Matrix = referenceImage });
+				_photos.Add(new Photo(referenceImage, photos.First()));
 				// Iterate through the rest of the images and align them to the reference image
 				for (int i = 1; i < photos.Count(); i++)
 				{
@@ -52,11 +52,11 @@ namespace AIFocusStacking.Services
 					if (alignment)
 					{
 						Mat alignedImage = AlignImages(referenceImage, currentImage);
-						_photos.Add(new Photo() { Path = photos.ToArray()[i], Matrix = alignedImage });
+						_photos.Add(new Photo(alignedImage, photos.ToArray()[i]));
 					}
 					else
 					{
-						_photos.Add(new Photo() { Path = photos.ToArray()[i], Matrix = currentImage });
+						_photos.Add(new Photo(currentImage, photos.ToArray()[i]));
 					}
 				}
 				Mat matGauss = new();
@@ -64,11 +64,9 @@ namespace AIFocusStacking.Services
 				for (int i = 0; i < _photos.Count; i++)
 				{
 					if (gauss)
-						Cv2.GaussianBlur(_photos[i].Matrix!, matGauss, new Size() { Height = gaussSize, Width = gaussSize }, 0);
+						Cv2.GaussianBlur(_photos[i].Matrix, matGauss, new Size() { Height = gaussSize, Width = gaussSize }, 0);
 					else
-						_photos[i].Matrix!.CopyTo(matGauss);
-
-					_photos[i].MatrixAfterGauss = matGauss;
+						_photos[i].Matrix.CopyTo(matGauss);
 
 					Cv2.CvtColor(matGauss, matGauss, ColorConversionCodes.BGR2GRAY);
 					Mat matLaplace = new();
@@ -87,7 +85,7 @@ namespace AIFocusStacking.Services
 					_panopticSegmentationService.RunPanopticSegmentation(_photos);
 				}
 
-				Mat result =_photos.First().Matrix!.Clone();
+				Mat result =_photos.First().Matrix.Clone();
 				byte maxIntensity = 0;
 				byte intensity = 0;
 
@@ -142,7 +140,7 @@ namespace AIFocusStacking.Services
 							{
 								for (int y = -maskSize; y <= maskSize; y++)
 								{
-									result.At<Vec3b>(i + x, j + y) = _photos[z].Matrix!.At<Vec3b>(i + x, j + y);
+									result.At<Vec3b>(i + x, j + y) = _photos[z].Matrix.At<Vec3b>(i + x, j + y);
 								}
 							}
 
@@ -174,7 +172,7 @@ namespace AIFocusStacking.Services
 						if (intensity > maxIntensity)
 						{
 							maxIntensity = intensity;
-							result.At<Vec3b>(i, j) = _photos[z].Matrix!.At<Vec3b>(i, j);
+							result.At<Vec3b>(i, j) = _photos[z].Matrix.At<Vec3b>(i, j);
 						}
 					}
 

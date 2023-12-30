@@ -29,7 +29,7 @@ namespace AIFocusStacking.Services
 				List<List<Point>> contours = new();
 				List<Point> currentMask = new();
 
-				JArray masksJson = JArray.Parse(File.ReadAllText($"masks{photos[index].Path!.Split('\\').Last()}.json"));
+				JArray masksJson = JArray.Parse(File.ReadAllText($"masks{photos[index].Path.Split('\\').Last()}.json"));
 				foreach (var points in masksJson[i])
 				{
 					currentMask.Add(new Point((int)points[0]![0]!, (int)points[0]![1]!));
@@ -55,11 +55,11 @@ namespace AIFocusStacking.Services
 		{
 			for (int i = 0; i < photos.Count; i++)
 			{
-				Mat imageToMask = photos[i].Matrix!.Clone();
+				Mat imageToMask = photos[i].Matrix.Clone();
 
 				List<List<Point>> contours = new();
 				List<Rect> boxes = new();
-				JArray masksJson = JArray.Parse(File.ReadAllText($"masks{photos[i].Path!.Split('\\').Last()}.json"));
+				JArray masksJson = JArray.Parse(File.ReadAllText($"masks{photos[i].Path.Split('\\').Last()}.json"));
 				foreach (var mask in masksJson)
 				{
 					List<Point> currentMask = new();
