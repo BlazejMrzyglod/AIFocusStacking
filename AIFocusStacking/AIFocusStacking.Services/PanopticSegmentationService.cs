@@ -35,7 +35,7 @@ namespace AIFocusStacking.Services
 					if (intensities[j][i] > maxMaskIntensity) { maxMaskIntensity = intensities[j][i]; index = j; }
 				}
 				List<Point> segment = new();
-				JArray segmentsJson = JArray.Parse(File.ReadAllText($"panoptic{photos[index].Path.Split('\\').Last()}.json"));
+				JArray segmentsJson = JArray.Parse(File.ReadAllText($"panoptic_masks_{photos[index].Path.Split('\\').Last()}.json"));
 
 				for (int j = 0; j < segmentsJson.Count; j++)
 				{
@@ -103,8 +103,8 @@ namespace AIFocusStacking.Services
 
 				List<List<Point>> segments = new();
 				List<Rect> boxes = new();
-				JArray segmentsJson = JArray.Parse(File.ReadAllText($"panoptic{photos[i].Path.Split('\\').Last()}.json"));
-				JArray segmentsInfo = JArray.Parse(File.ReadAllText($"panoptic_seg_info{photos[i].Path.Split('\\').Last()}.json"));
+				JArray segmentsJson = JArray.Parse(File.ReadAllText($"panoptic_masks{photos[i].Path.Split('\\').Last()}.json"));
+				JArray segmentsInfo = JArray.Parse(File.ReadAllText($"panoptic_classes_{photos[i].Path.Split('\\').Last()}.json"));
 				for (int j = 0; j < segmentsJson.Count; j++)
 				{
 					for (int k = 0; k < segmentsJson[0].Count(); k++)
