@@ -94,7 +94,7 @@ namespace AIFocusStacking.Services
 						{
 							if (Mask.At<byte>(k, l) == 255)
 							{
-								maskIntensity += photos[j].MatrixAfterLaplace!.At<byte>(k, l);
+								maskIntensity += photo.MatrixAfterLaplace!.At<byte>(k, l);
 							}
 						}
 					}
