@@ -11,6 +11,7 @@ namespace AIFocusStacking.Services
 		public void RunInstanceSegmentation(List<Photo> photos)
 		{
 			_commandsService.RunModel("2");
+			GetObjects(photos);
 			GetIntensities(photos);
 			ChooseBestMasks(photos);
 		}
@@ -57,6 +58,11 @@ namespace AIFocusStacking.Services
 				Photo photo = photos[i];
 				Mat imageToMask = photo.Matrix.Clone();
 
+		private static void GetObjects(List<Photo> photos)
+		{
+			for (int i = 0; i < photos.Count; i++)
+			{
+				Photo photo = photos[i];
 				JArray contoursJson = JArray.Parse(File.ReadAllText($"contours_{photo.Path.Split('\\').Last()}.json"));
 				JArray classesJson = JArray.Parse(File.ReadAllText($"classes_{photo.Path.Split('\\').Last()}.json"));
 
@@ -79,6 +85,14 @@ namespace AIFocusStacking.Services
 					Rect currentBox = Cv2.BoundingRect(currentContour);
 					photo.DetectedObjects!.Add(new DetectedObject(currentContour, currentBox, (int)_class));
 				}
+			}
+		}
+		private static void GetIntensities(List<Photo> photos)
+		{
+			for (int i = 0; i < photos.Count; i++)
+			{
+				Photo photo = photos[i];
+				Mat imageToMask = photo.Matrix.Clone();
 
 				for (int j = 0; j < photo.DetectedObjects!.Count; j++)
 				{
