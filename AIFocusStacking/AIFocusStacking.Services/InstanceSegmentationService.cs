@@ -31,7 +31,7 @@ namespace AIFocusStacking.Services
 				DetectedObject bestObject = new(new List<Point>(), new Rect(), 0);
 				for (int j = 0; j < photos.Count; j++)
 				{
-					if (matchedObjects[i][j].Intensity > maxMaskIntensity) { maxMaskIntensity = (int)matchedObjects[i][j].Intensity; bestObject = matchedObjects[i][j]; }
+					if (matchedObjects[i][j].Intensity > maxMaskIntensity) { maxMaskIntensity = (int)matchedObjects[i][j].Intensity!; bestObject = matchedObjects[i][j]; }
 				}
 				Photo photoWithBestObject = new(new Mat(), "");
 				for (int j = 0; j < photos.Count; j++)

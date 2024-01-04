@@ -144,7 +144,7 @@ namespace AIFocusStacking.Services
 				Photo photo = photos[i];
 				Mat imageToMask = photos[i].Matrix.Clone();
 
-				JArray masksJson = JArray.Parse(File.ReadAllText($"panoptic_masks{photo.Path.Split('\\').Last()}.json"));
+				JArray masksJson = JArray.Parse(File.ReadAllText($"panoptic_masks_{photo.Path.Split('\\').Last()}.json"));
 				JArray classesJson = JArray.Parse(File.ReadAllText($"panoptic_classes_{photo.Path.Split('\\').Last()}.json"));
 
 				for (int j = 0; j < masksJson.Count; j++)
@@ -172,7 +172,7 @@ namespace AIFocusStacking.Services
 					}
 				}
 
-				for (int j = 0; j <= classesJson.Count; j++)
+				for (int j = 1; j <= classesJson.Count; j++)
 				{
 					List<Point> currentMask = new();
 					for (int k = 0; k < masksJson.Count; k++)
@@ -181,7 +181,7 @@ namespace AIFocusStacking.Services
 						{							
 							if ((int)masksJson[k]![l]! == j)
 							{
-								currentMask.Add(new Point(k, l));
+								currentMask.Add(new Point(l, k));
 							}
 						}
 					}
@@ -193,7 +193,7 @@ namespace AIFocusStacking.Services
 						photo.DetectedObjects = new();
 					}
 
-					photo.DetectedObjects.Add(new DetectedObject(currentMask, box, (int)classesJson[j]));
+					photo.DetectedObjects.Add(new DetectedObject(currentMask, box, (int)classesJson[j-1]));
 				}
 
 				for (int j = 0; j < photo.DetectedObjects!.Count; j++)
@@ -206,12 +206,12 @@ namespace AIFocusStacking.Services
 
 					for (int k = 0; k < mask.Count; k++)
 					{
-						Mask.At<Vec3b>(mask[k].X,mask[k].Y) = new Vec3b(255,255,255);
+						Mask.At<Vec3b>(mask[k].Y,mask[k].X) = new Vec3b(255,255,255);
 						
 					}
-					for (int k = box.Left + 1; k < box.Right; k++)
+					for (int k = box.Top + 1; k < box.Bottom; k++)
 					{
-						for (int l = box.Top + 1; l < box.Bottom; l++)
+						for (int l = box.Left + 1; l < box.Right; l++)
 						{
 							if (Mask.At<byte>(k, l) == 255)
 							{
