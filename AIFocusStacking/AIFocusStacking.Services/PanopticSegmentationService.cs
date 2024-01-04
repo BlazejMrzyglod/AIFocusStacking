@@ -7,91 +7,134 @@ namespace AIFocusStacking.Services
 	public class PanopticSegmentationService : IPanopticSegmentationService
 	{
 		protected readonly IConsoleCommandsService _commandsService;
-		public PanopticSegmentationService(IConsoleCommandsService commandsService) { _commandsService = commandsService; }
+		protected readonly IFeatureMatchingService _featureMatchingService;
+		public PanopticSegmentationService(IConsoleCommandsService commandsService, IFeatureMatchingService featureMatchingService)
+		{
+			_commandsService = commandsService; 
+			_featureMatchingService = featureMatchingService;
+		}
 		public void RunPanopticSegmentation(List<Photo> photos)
 		{
 			_commandsService.RunModel("3");
 			GetIntensities(photos);
-			ChooseBestMasks(photos);
+			List<List<DetectedObject>> matchedObjects = MatchObjects(photos);
+			ChooseBestMasks(photos, matchedObjects);
 		}
-
-		private static void ChooseBestMasks(List<Photo> photos)
+		private List<List<DetectedObject>> MatchObjects(List<Photo> photos)
 		{
-			int segmentsAmount = intensities.First().Count;
-			for (int i = 1; i < intensities.Count; i++)
+			List<DetectedObject> matchedObjects = new();
+			List<List<DetectedObject>> sameObjects = new();
+			int matchesCutOff = 0;
+			for (int i = 0; i < photos.Count; i++)
 			{
-				if (intensities[i].Count != segmentsAmount)
+				Photo photo = photos[i];
+				for (int j = 0; j < photo.DetectedObjects!.Count; j++)
 				{
-					throw new Exception("Różne liczby segmentów");
-				}
-			}
-			for (int i = 0; i < segmentsAmount; i++)
-			{
-				int maxMaskIntensity = 0;
-				int index = 0;
-				for (int j = 0; j < photos.Count; j++)
-				{
-					if (intensities[j][i] > maxMaskIntensity) { maxMaskIntensity = intensities[j][i]; index = j; }
-				}
-				List<Point> segment = new();
-				JArray segmentsJson = JArray.Parse(File.ReadAllText($"panoptic_masks_{photos[index].Path.Split('\\').Last()}.json"));
-
-				for (int j = 0; j < segmentsJson.Count; j++)
-				{
-					for (int k = 0; k < segmentsJson[0].Count(); k++)
+					if (!matchedObjects.Contains(photo.DetectedObjects[j]))
 					{
-						if ((int)segmentsJson[j]![k]! == 0)
+						matchedObjects.Add(photo.DetectedObjects[j]);
+						List<DetectedObject> currentMatchedObjects = new()
 						{
-							if (k == 0)
+							photo.DetectedObjects[j]
+						};
+						Mat objectMatrix = photo.Matrix.SubMat(photo.DetectedObjects[j].Box);
+						for (int k = 0; k < photos.Count; k++)
+						{
+							if (k != i)
 							{
-								if (j == 0)
+								int mostMatches = 0;
+								int index = 0;
+								for (int l = 0; l < photos[k].DetectedObjects!.Count; l++)
 								{
-									segmentsJson[j][k] = 1;
+									if (photos[k].DetectedObjects![l].Class == photo.DetectedObjects[j].Class && !matchedObjects.Contains(photos[k].DetectedObjects![l]))
+									{
+										Mat checkedObjectMatrix = photos[k].Matrix.SubMat(photos[k].DetectedObjects![l].Box);
+										int amountOfMatches = _featureMatchingService.GetAmountOfMatches(objectMatrix, checkedObjectMatrix);
+
+										if (amountOfMatches >= mostMatches)
+										{
+											mostMatches = amountOfMatches;
+											index = l;
+										}
+									}
+								}
+
+								if (mostMatches >= matchesCutOff && !matchedObjects.Contains(photos[k].DetectedObjects![index]))
+								{
+									matchedObjects.Add(photos[k].DetectedObjects![index]);
+									currentMatchedObjects.Add(photos[k].DetectedObjects![index]);
 								}
 								else
 								{
-									segmentsJson[j][k] = segmentsJson[j - 1][segmentsJson[0].Count() - 1];
+									DetectedObject objectToAdd = new DetectedObject(photo.DetectedObjects[j].Mask, photo.DetectedObjects[j].Box, photo.DetectedObjects[j].Class) { Intensity = 0 };
+									photos[k].DetectedObjects!.Add(objectToAdd);
+									matchedObjects.Add(objectToAdd);
+									currentMatchedObjects.Add(objectToAdd);
 								}
 							}
-							else
-							{
-								segmentsJson[j][k] = segmentsJson[j][k - 1];
-							}
 						}
+						sameObjects.Add(currentMatchedObjects);
 					}
 				}
 
-				for (int k = 0; k < segmentsJson.Count; k++)
-				{
-					for (int l = 0; l < segmentsJson[0].Count(); l++)
-					{
-						if ((int)segmentsJson[k]![l]! == i + 1)
-						{
-							segment.Add(new Point(k, l));
-						}
-					}
-				}
-
+			}
+			return sameObjects;
+		}
+		private static void ChooseBestMasks(List<Photo> photos, List<List<DetectedObject>> matchedObjects)
+		{
+			for (int i = 0; i < matchedObjects.Count; i++)
+			{
+				int maxMaskIntensity = 0;
+				DetectedObject bestObject = new(new List<Point>(), new Rect(), 0);
 				for (int j = 0; j < photos.Count; j++)
 				{
-					if (j == index)
+					if (matchedObjects[i][j].Intensity > maxMaskIntensity) { maxMaskIntensity = (int)matchedObjects[i][j].Intensity!; bestObject = matchedObjects[i][j]; }
+				}
+				Photo photoWithBestObject = new(new Mat(), "");
+				for (int j = 0; j < photos.Count; j++)
+				{
+					if (photos[j].DetectedObjects!.Contains(bestObject))
 					{
-						for (int k = 0; k < segment.Count; k++)
+						//Cv2.DrawContours(photos[j].MatrixAfterLaplace!, new List<List<Point>>() { bestObject.Mask }, -1, new Scalar(255, 255, 255), -1);
+						for (int k = 0; k < bestObject.Mask.Count; k++)
 						{
-							photos[j].MatrixAfterLaplace!.At<byte>(segment[k].X, segment[k].Y) = 255;
+							photos[j].MatrixAfterLaplace!.At<byte>(bestObject.Mask[k].Y, bestObject.Mask[k].X) = 255;
 						}
+						photoWithBestObject = photos[j];
+						break;
 					}
-					else
+				}
+				for (int j = 0; j < photos.Count; j++)
+				{
+					if (photos[j] != photoWithBestObject)
 					{
-						for (int k = 0; k < segment.Count; k++)
+						for (int k = 0; k < photos[j].DetectedObjects!.Count; k++)
 						{
-							photos[j].MatrixAfterLaplace!.At<byte>(segment[k].X, segment[k].Y) = 0;
+							if (matchedObjects[i].Contains(photos[j].DetectedObjects![k]))
+							{
+								//Cv2.DrawContours(photos[j].MatrixAfterLaplace!, new List<List<Point>>() { photos[j].DetectedObjects![k].Mask }, -1, new Scalar(0, 0, 0), -1);
+								for (int l = 0; l < photos[j].DetectedObjects![k].Mask.Count; l++)
+								{
+									photos[j].MatrixAfterLaplace!.At<byte>(photos[j].DetectedObjects![k].Mask[l].Y, photos[j].DetectedObjects![k].Mask[l].X) = 0;
+									photoWithBestObject.MatrixAfterLaplace!.At<byte>(photos[j].DetectedObjects![k].Mask[l].Y, photos[j].DetectedObjects![k].Mask[l].X) = 255;
+								}
+								//Cv2.DrawContours(photoWithBestObject.MatrixAfterLaplace!, new List<List<Point>>() { photos[j].DetectedObjects![k].Mask }, -1, new Scalar(255, 255, 255), -1);
+								break;
+							}
 						}
-					}
+						for (int k = 0; k < bestObject.Mask.Count; k++)
+						{
+							photos[j].MatrixAfterLaplace!.At<byte>(bestObject.Mask[k].Y, bestObject.Mask[k].X) = 0;
+						}
+						//Cv2.DrawContours(photos[j].MatrixAfterLaplace!, new List<List<Point>>() { bestObject.Mask }, -1, new Scalar(0, 0, 0), -1);
+					}				
+				}
+				for (int j = 0; j < photos.Count; j++)
+				{
 					photos[j].MatrixAfterLaplace!.SaveImage($"laplace{j}.jpg");
 				}
-			}
-			
+
+				}
 		}
 
 		private static void GetIntensities(List<Photo> photos)
