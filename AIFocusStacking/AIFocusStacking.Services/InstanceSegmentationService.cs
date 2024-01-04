@@ -1,6 +1,7 @@
 ﻿using AIFocusStacking.Models;
 using Newtonsoft.Json.Linq;
 using OpenCvSharp;
+using System.Linq;
 
 namespace AIFocusStacking.Services
 {
@@ -32,21 +33,38 @@ namespace AIFocusStacking.Services
 				{
 					if (matchedObjects[i][j].Intensity > maxMaskIntensity) { maxMaskIntensity = (int)matchedObjects[i][j].Intensity; bestObject = matchedObjects[i][j]; }
 				}
-
+				Photo photoWithBestObject = new(new Mat(), "");
 				for (int j = 0; j < photos.Count; j++)
 				{
-					if (photos[j].DetectedObjects.Contains(bestObject))
+					if (photos[j].DetectedObjects!.Contains(bestObject))
 					{
 						Cv2.DrawContours(photos[j].MatrixAfterLaplace!, new List<List<Point>>() { bestObject.Mask }, -1, new Scalar(255, 255, 255), -1);
+						photoWithBestObject = photos[j];
+						break;
 					}
-					else
+				}
+				for (int j = 0; j < photos.Count; j++)
+				{
+					if (photos[j] != photoWithBestObject)
 					{
-						Cv2.DrawContours(photos[j].MatrixAfterLaplace!, new List<List<Point>>() {bestObject.Mask }, -1, new Scalar(0, 0, 0), -1);
-					}
+						for (int k = 0; k < photos[j].DetectedObjects!.Count; k++)
+						{
+							if (matchedObjects[i].Contains(photos[j].DetectedObjects![k]))
+							{
+								Cv2.DrawContours(photos[j].MatrixAfterLaplace!, new List<List<Point>>() { photos[j].DetectedObjects![k].Mask }, -1, new Scalar(0, 0, 0), -1);
+								Cv2.DrawContours(photoWithBestObject.MatrixAfterLaplace!, new List<List<Point>>() { photos[j].DetectedObjects![k].Mask }, -1, new Scalar(255, 255, 255), -1);
+								break;
+							}
+						}
+						Cv2.DrawContours(photos[j].MatrixAfterLaplace!, new List<List<Point>>() { bestObject.Mask }, -1, new Scalar(0, 0, 0), -1);
+					}				
+				}
+				for (int j = 0; j < photos.Count; j++)
+				{
 					photos[j].MatrixAfterLaplace!.SaveImage($"laplace{j}.jpg");
 				}
 
-			}
+				}
 		}
 
 		private List<List<DetectedObject>> MatchObjects(List<Photo> photos)
@@ -78,7 +96,7 @@ namespace AIFocusStacking.Services
 										Mat checkedObjectMatrix = photos[k].Matrix.SubMat(photos[k].DetectedObjects![l].Box);
 										int amountOfMatches = _featureMatchingService.GetAmountOfMatches(objectMatrix, checkedObjectMatrix);
 
-										if (amountOfMatches > mostMatches)
+										if (amountOfMatches >= mostMatches)
 										{
 											mostMatches = amountOfMatches;
 											index = l;
