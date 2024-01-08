@@ -8,20 +8,39 @@ using System.Collections.Generic;
 
 namespace AIFocusStacking.Wpf
 {
-	/// <summary>
-	/// Interaction logic for MainWindow.xaml
-	/// </summary>
-	public partial class MainWindow : System.Windows.Window
+	//Główne okno programu
+	public partial class MainWindow : Window
 	{
+		//Repozytorium zdjęć
 		protected readonly IPhotoRepositoryService _photoRepository;
+
+		//Serwis wykonujący focus stacking
 		protected readonly IFocusStackingService _focusStackingService;
+
+		//Czy wyrównywać zdjęcia?
 		private bool? alignment;
+
+		//Czy używać filtru gaussa?
 		private bool? gauss;
+
+		//Czy traktować piksele w masce jako jedność?
 		private bool? takeAll;
+
+		//Wielkość maski dla filtru Gaussa
 		private int gaussSize;
+
+		//Wielkość maski dla filtru Laplace'a
 		private int laplaceSize;
+
+		//Wielkość maski dla sprawdzania instnsywności
 		private int maskSize;
+
+		//Której metody focus stackingu użyć 
+		//1 - bez AI
+		//2 - Segmentacjia instancji
+		//3 - Panoptyczna segmentacja
 		private string? method;
+
 		public MainWindow(IPhotoRepositoryService photoRepository, IFocusStackingService focusStackingService)
 		{
 			_photoRepository = photoRepository;
@@ -38,14 +57,19 @@ namespace AIFocusStacking.Wpf
 		//Funkcja umożliwająca wybranie zdjęć
 		private void ChooseImagesButton_Click(object sender, RoutedEventArgs e)
 		{
+			//Otwórz dialog wyboru plików z opcją wielokrotnego wyboru
 			OpenFileDialog fileDialog = new()
 			{
 				Multiselect = true
 			};
+
+			//Stwórz pliki w repozytorium zdjęć
 			if (fileDialog.ShowDialog() == true)
 				_photoRepository.CreateMultiple(fileDialog.FileNames);
+
+			//Dodaj zdjęcia do obszaru wyświetlającego zdjęcia
 			foreach (var file in fileDialog.FileNames)
-				ImagesWrapPanel.Children.Add(new System.Windows.Controls.Image { Source = new BitmapImage(new Uri(file)), Height = 200, Width = 200 });
+				ImagesWrapPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(file)), Height = 200, Width = 200 });
 		}
 
 		//Funkcja odpowiadająca za dodawanie "przeciągniętych" zdjęć
@@ -53,16 +77,25 @@ namespace AIFocusStacking.Wpf
 		{
 			if (e.Data.GetDataPresent(DataFormats.FileDrop))
 			{
+				//Pobierz przeciągnięte pliki
 				string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+				//Stwórz pliki w repozytorium zdjęć
 				_photoRepository.CreateMultiple(files);
+
+				//Dodaj zdjęcia do obszaru wyświetlającego zdjęcia
 				foreach (var file in files)
-					ImagesWrapPanel.Children.Add(new System.Windows.Controls.Image { Source = new BitmapImage(new Uri(file)), Height = 200, Width = 200 });
+					ImagesWrapPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(file)), Height = 200, Width = 200 });
 			}
 		}
 
+		//Funkcja uruchamiająca focus stacking
 		private void RunFocusStacking_Click(object sender, RoutedEventArgs e)
 		{
+			//Pobierz zdjęcia z repozytorium
 			IEnumerable<string> photos = _photoRepository.GetAll();
+
+			//Uruchom focus stacking
 			_focusStackingService.RunFocusStacking(photos, (bool)alignment!, (bool)gauss!, laplaceSize, gaussSize, (bool)takeAll!, maskSize, method!);
 			/*ObjectsWindow objectsWindow = new ObjectsWindow();
 			objectsWindow.Show();*/

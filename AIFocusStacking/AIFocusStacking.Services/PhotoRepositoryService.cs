@@ -1,15 +1,23 @@
 ﻿namespace AIFocusStacking.Services
 {
-    public class PhotoRepositoryService : IPhotoRepositoryService
+	//Repozytorium zdjęć
+	public class PhotoRepositoryService : IPhotoRepositoryService
     {
+        //Folder zawierający zdjęcia
         protected string _repositoryFolder = "images";
+
+        //Stwórz zdjęcie w folderze
         public ServiceResult Create(string photo)
         {
             ServiceResult result = new();
             try
             {
+                //Stwórz folder
                 Directory.CreateDirectory(_repositoryFolder);
+
+                //Kopiuj zdjęcie do folderu
                 File.Copy(photo, _repositoryFolder + "\\" + photo.Split("\\").Last());
+
                 result.Result = ServiceResultStatus.Succes;
             }
             catch (Exception e)
@@ -20,16 +28,21 @@
             return result;
         }
 
-        public ServiceResult CreateMultiple(string[] photos)
+		//Stwórz zdjęcia w folderze
+		public ServiceResult CreateMultiple(string[] photos)
         {
             ServiceResult result = new();
             try
             {
-                Directory.CreateDirectory(_repositoryFolder);
-                foreach (var photo in photos)
+				//Stwórz folder
+				Directory.CreateDirectory(_repositoryFolder);
+
+				//Kopiuj zdjęcia do folderu
+				foreach (var photo in photos)
                 {
                     File.Copy(photo, _repositoryFolder + "\\" + photo.Split("\\").Last());
                 }
+
                 result.Result = ServiceResultStatus.Succes;
             }
             catch (Exception e)
@@ -42,6 +55,7 @@
             
         }
 
+        //Usuń zdjęcie z folderu
         public ServiceResult Delete(string photo)
         {
             ServiceResult result = new();
@@ -58,7 +72,8 @@
             return result;
         }
 
-        public ServiceResult DeleteMultiple(string[] photos)
+		//Usuń zdjęcia z folderu
+		public ServiceResult DeleteMultiple(string[] photos)
         {
             ServiceResult result = new();
             try
@@ -77,6 +92,7 @@
             return result;
         }
 
+        //Usuń wszystkie zdjęcia
         public ServiceResult DeleteAll()
         {
             ServiceResult result = new();
@@ -92,14 +108,19 @@
             }
             return result;
         }
+
+        //Edytuj zdjęcie
         public ServiceResult Edit(string photo)
         {
             ServiceResult result = new();
             try
-            {
-                Directory.CreateDirectory(_repositoryFolder);
-                File.Delete(_repositoryFolder + "\\" + photo.Split("\\").Last());
-                File.Copy(photo, _repositoryFolder + "\\" + photo.Split("\\").Last());
+            {        
+                //Usuń zdjęcie
+                Delete(photo);
+
+                //Stwórz zdjęcie
+                Create(photo);
+
                 result.Result = ServiceResultStatus.Succes;
             }
             catch (Exception e)
@@ -110,16 +131,21 @@
             return result;
         }
 
-        public ServiceResult EditMultiple(string[] photos)
+		//Edytuj zdjęcia
+		public ServiceResult EditMultiple(string[] photos)
         {
             ServiceResult result = new();
             try
             {
+                //Iteruj po zdjęciach
                 foreach (var photo in photos)
                 {
-                    Directory.CreateDirectory(_repositoryFolder);
-                    File.Delete(_repositoryFolder + "\\" + photo.Split("\\").Last());
-                    File.Copy(photo, _repositoryFolder + "\\" + photo.Split("\\").Last());
+					//Usuń zdjęcie
+					Delete(photo);
+
+					//Stwórz zdjęcie
+					Create(photo);
+
                     result.Result = ServiceResultStatus.Succes;
                 }            
             }
@@ -131,23 +157,27 @@
             return result;
         }
 
+        //Pobierz wszystkie zdjęcia
         public IEnumerable<string> GetAll()
         {
             IEnumerable<string> photos = Directory.GetFiles(_repositoryFolder);
             return photos;
         }
 
+        //Pobierz zdjęcie
         public string GetSingle(string photo)
         {
             return Directory.GetFiles(_repositoryFolder).Where(r => r == photo).SingleOrDefault()!;
         }
 
+        //Zmień folder zawierający zdjęcia
         public ServiceResult ChangeDirectory(string directory)
         {
             ServiceResult result = new();
             try
             {
                 _repositoryFolder = directory;
+
                 result.Result = ServiceResultStatus.Succes;
             }
             

@@ -2,6 +2,7 @@
 
 namespace AIFocusStacking.Services
 {
+    //Status obiektu zwracanego przez serwisy
     public enum ServiceResultStatus
     {
         [Description("Błąd")]
@@ -13,9 +14,14 @@ namespace AIFocusStacking.Services
         [Description("Informacja")]
         Info,
     }
-    public class ServiceResult
+
+	//Obiekt zwracany przez serwisy
+	public class ServiceResult
     {
+        //Status obiektu
         public ServiceResultStatus Result { get; set; }
+
+        //Wiadomość zwracana
         public ICollection<String> Messages { get; set; }
 
         public ServiceResult()
@@ -24,6 +30,7 @@ namespace AIFocusStacking.Services
             Messages = new List<string>();
         }
 
+        //Słownik tworzący obiekt zwracany zależnie od wiadomości
         public static Dictionary<string, ServiceResult> CommonResults { get; set; } = new Dictionary<string, ServiceResult>()
         {
               {"NotFound" , new ServiceResult() {
