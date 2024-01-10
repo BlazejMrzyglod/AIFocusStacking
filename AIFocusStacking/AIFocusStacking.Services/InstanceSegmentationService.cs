@@ -1,7 +1,6 @@
 ﻿using AIFocusStacking.Models;
 using Newtonsoft.Json.Linq;
 using OpenCvSharp;
-using System.Linq;
 
 namespace AIFocusStacking.Services
 {
@@ -23,7 +22,7 @@ namespace AIFocusStacking.Services
 		public void RunInstanceSegmentation(List<Photo> photos, string confidence)
 		{
 			//Uruchom Detectron2
-			_commandsService.RunModel("2", confidence);
+			_ = _commandsService.RunModel("2", confidence);
 
 			//Dodaj wykryte obiekty do zdjęć
 			GetObjects(photos);
@@ -42,7 +41,7 @@ namespace AIFocusStacking.Services
 		/* Funkcja wybierająca obiekty z największą intensywnością pikseli
 		Funkcja zamienia obszary na zdjęciach po filtrze Laplace'a na czarny lub biał kolor zależnie od tego,
 		czy zawierają obiekt z największą intensywnością pikseli */
-		private void ChooseBestMasks(List<Photo> photos, List<List<DetectedObject>> matchedObjects)
+		private static void ChooseBestMasks(List<Photo> photos, List<List<DetectedObject>> matchedObjects)
 		{
 			//Iteruj przez wszystkie kolekcje dobranych obiektów
 			for (int i = 0; i < matchedObjects.Count; i++)
@@ -99,12 +98,12 @@ namespace AIFocusStacking.Services
 
 						//Narysuj wypełniony czarny kontur obiektu z największą intensywnością pikseli na zdjęciu po filtrze Laplace'a, które go nie zawiera
 						Cv2.DrawContours(photos[j].MatrixAfterLaplace!, new List<List<Point>>() { bestObject.Mask }, -1, new Scalar(0, 0, 0), -1);
-					}				
+					}
 				}
 				//Zapisz zdjęcia po filtrze Laplace'a
 				for (int j = 0; j < photos.Count; j++)
 				{
-					photos[j].MatrixAfterLaplace!.SaveImage($"laplace{j}.jpg");
+					_ = photos[j].MatrixAfterLaplace!.SaveImage($"laplace{j}.jpg");
 				}
 
 			}
@@ -188,7 +187,7 @@ namespace AIFocusStacking.Services
 								else
 								{
 									//Stwórz nowy obiekt, który jest kopią aktualnego obiektu, ale jesgo intensywność jest równa 0
-									DetectedObject objectToAdd = new DetectedObject(photo.DetectedObjects[j].Mask, photo.DetectedObjects[j].Box, photo.DetectedObjects[j].Class) { Intensity = 0 };
+									DetectedObject objectToAdd = new(photo.DetectedObjects[j].Mask, photo.DetectedObjects[j].Box, photo.DetectedObjects[j].Class) { Intensity = 0 };
 
 									//Dodaj do aktualnego zdjęcia stworzony obiekt
 									photos[k].DetectedObjects!.Add(objectToAdd);
@@ -226,10 +225,7 @@ namespace AIFocusStacking.Services
 				JArray classesJson = JArray.Parse(File.ReadAllText($"classes_{photo.Path.Split('\\').Last()}.json"));
 
 				//Stwórz kolekcję wykrytych obiektów jeśli nie istnieje
-				if (photo.DetectedObjects == null)
-				{
-					photo.DetectedObjects = new();
-				}
+				photo.DetectedObjects ??= new();
 
 				//Iteruj przez wszystkie kontury
 				for (int j = 0; j < contoursJson.Count; j++)
@@ -242,7 +238,7 @@ namespace AIFocusStacking.Services
 
 					//Pobierz wszystkie punkty konturu
 					List<Point> currentContour = new();
-					foreach (var points in contour)
+					foreach (JToken points in contour)
 					{
 						currentContour.Add(new Point((int)points[0]![0]!, (int)points[0]![1]!));
 					}
@@ -293,7 +289,7 @@ namespace AIFocusStacking.Services
 						}
 					}
 					//Ustaw intensywność aktualnego obiektu na średnią intensywność pikseli
-					detectedObject.Intensity = maskIntensity/numberOfPixels;
+					detectedObject.Intensity = maskIntensity / numberOfPixels;
 				}
 			}
 		}

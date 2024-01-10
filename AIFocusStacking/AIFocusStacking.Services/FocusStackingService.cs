@@ -13,9 +13,9 @@ namespace AIFocusStacking.Services
 		//Lista zdjęć
 		protected List<Photo> _photos;
 
-		public FocusStackingService(IInstanceSegmentationService instanceSegmentationService, IPanopticSegmentationService panopticSegmentationService) 
-		{ 
-			_instanceSegmentationService = instanceSegmentationService; 
+		public FocusStackingService(IInstanceSegmentationService instanceSegmentationService, IPanopticSegmentationService panopticSegmentationService)
+		{
+			_instanceSegmentationService = instanceSegmentationService;
 			_panopticSegmentationService = panopticSegmentationService;
 			_photos = new();
 		}
@@ -35,7 +35,7 @@ namespace AIFocusStacking.Services
 			TermCriteria criteria = new(CriteriaTypes.Count | CriteriaTypes.Eps, 500, 1e-10);
 
 			//Wykonaj transformacji ECC
-			Cv2.FindTransformECC(grayReference, grayCurrent, warpMatrix, MotionTypes.Euclidean, criteria);
+			_ = Cv2.FindTransformECC(grayReference, grayCurrent, warpMatrix, MotionTypes.Euclidean, criteria);
 
 			//Wyrównaj zdjęcia
 			Mat alignedImage = new();
@@ -45,7 +45,7 @@ namespace AIFocusStacking.Services
 		}
 
 		//Funckja wykonująca focus stacking
-		public ServiceResult RunFocusStacking(IEnumerable<string> photos, bool alignment, bool gauss, int laplaceSize, int gaussSize, 
+		public ServiceResult RunFocusStacking(IEnumerable<string> photos, bool alignment, bool gauss, int laplaceSize, int gaussSize,
 											  bool takeAll, int maskSize, string method, string confidence)
 		{
 			ServiceResult serviceResult = new();
@@ -81,9 +81,13 @@ namespace AIFocusStacking.Services
 				{
 					//Ewentualne użycie filtru Gaussa
 					if (gauss)
+					{
 						Cv2.GaussianBlur(_photos[i].Matrix, matGauss, new Size() { Height = gaussSize, Width = gaussSize }, 0);
+					}
 					else
+					{
 						_photos[i].Matrix.CopyTo(matGauss);
+					}
 
 					//Użycie filtru Laplace'a
 					Cv2.CvtColor(matGauss, matGauss, ColorConversionCodes.BGR2GRAY);
@@ -92,7 +96,7 @@ namespace AIFocusStacking.Services
 
 					//Zapisanie zdjęcia po filtrowaniu
 					_photos[i].MatrixAfterLaplace = matLaplace;
-					matLaplace.SaveImage($"laplace{i}.jpg");
+					_ = matLaplace.SaveImage($"laplace{i}.jpg");
 
 				}
 
@@ -107,7 +111,7 @@ namespace AIFocusStacking.Services
 				}
 
 				//Ustawienie parametrów początkowych
-				Mat result =_photos.First().Matrix.Clone();
+				Mat result = _photos.First().Matrix.Clone();
 				byte maxIntensity = 0;
 				byte intensity = 0;
 
@@ -122,7 +126,7 @@ namespace AIFocusStacking.Services
 				}
 
 				//Zapisz zdjęcie
-				result.SaveImage("result.jpg");
+				_ = result.SaveImage("result.jpg");
 
 				serviceResult.Result = ServiceResultStatus.Succes;
 			}

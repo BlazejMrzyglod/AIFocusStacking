@@ -1,10 +1,10 @@
 ﻿using AIFocusStacking.Services;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using System.Collections.Generic;
 
 namespace AIFocusStacking.Wpf
 {
@@ -69,11 +69,15 @@ namespace AIFocusStacking.Wpf
 
 			//Stwórz pliki w repozytorium zdjęć
 			if (fileDialog.ShowDialog() == true)
-				_photoRepository.CreateMultiple(fileDialog.FileNames);
+			{
+				_ = _photoRepository.CreateMultiple(fileDialog.FileNames);
+			}
 
 			//Dodaj zdjęcia do obszaru wyświetlającego zdjęcia
-			foreach (var file in fileDialog.FileNames)
-				ImagesWrapPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(file)), Height = 200, Width = 200 });
+			foreach (string? file in fileDialog.FileNames)
+			{
+				_ = ImagesWrapPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(file)), Height = 200, Width = 200 });
+			}
 		}
 
 		//Funkcja odpowiadająca za dodawanie "przeciągniętych" zdjęć
@@ -85,11 +89,13 @@ namespace AIFocusStacking.Wpf
 				string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 
 				//Stwórz pliki w repozytorium zdjęć
-				_photoRepository.CreateMultiple(files);
+				_ = _photoRepository.CreateMultiple(files);
 
 				//Dodaj zdjęcia do obszaru wyświetlającego zdjęcia
-				foreach (var file in files)
-					ImagesWrapPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(file)), Height = 200, Width = 200 });
+				foreach (string file in files)
+				{
+					_ = ImagesWrapPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(file)), Height = 200, Width = 200 });
+				}
 			}
 		}
 
@@ -100,7 +106,7 @@ namespace AIFocusStacking.Wpf
 			IEnumerable<string> photos = _photoRepository.GetAll();
 
 			//Uruchom focus stacking
-			_focusStackingService.RunFocusStacking(photos, (bool)alignment!, (bool)gauss!, laplaceSize, gaussSize, (bool)takeAll!, maskSize, method!, confidence);
+			_ = _focusStackingService.RunFocusStacking(photos, (bool)alignment!, (bool)gauss!, laplaceSize, gaussSize, (bool)takeAll!, maskSize, method!, confidence);
 			/*ObjectsWindow objectsWindow = new ObjectsWindow();
 			objectsWindow.Show();*/
 
@@ -124,19 +130,25 @@ namespace AIFocusStacking.Wpf
 		private void GaussSize_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			if (GaussSize.Text.Length > 0)
+			{
 				gaussSize = Convert.ToInt32(GaussSize.Text);
+			}
 		}
 
 		private void LaplaceSize_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			if (LaplaceSize.Text.Length > 0)
+			{
 				laplaceSize = Convert.ToInt32(LaplaceSize.Text);
+			}
 		}
 
 		private void MaskSize_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			if (MaskSize.Text.Length > 0)
+			{
 				maskSize = Convert.ToInt32(MaskSize.Text);
+			}
 		}
 
 		private void SelectMethod_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -148,7 +160,9 @@ namespace AIFocusStacking.Wpf
 		private void Confidence_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			if (Confidence.Text.Length > 0)
+			{
 				confidence = Confidence.Text;
+			}
 		}
 	}
 

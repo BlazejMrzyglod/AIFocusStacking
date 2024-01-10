@@ -1,7 +1,6 @@
 ﻿using AIFocusStacking.Models;
 using Newtonsoft.Json.Linq;
 using OpenCvSharp;
-using System.Globalization;
 
 namespace AIFocusStacking.Services
 {
@@ -15,7 +14,7 @@ namespace AIFocusStacking.Services
 		protected readonly IFeatureMatchingService _featureMatchingService;
 		public PanopticSegmentationService(IConsoleCommandsService commandsService, IFeatureMatchingService featureMatchingService)
 		{
-			_commandsService = commandsService; 
+			_commandsService = commandsService;
 			_featureMatchingService = featureMatchingService;
 		}
 
@@ -23,7 +22,7 @@ namespace AIFocusStacking.Services
 		public void RunPanopticSegmentation(List<Photo> photos, string confidence)
 		{
 			//Uruchom Detectron2
-			_commandsService.RunModel("3", confidence);
+			_ = _commandsService.RunModel("3", confidence);
 
 			//Pobierz intensywności danych obiektów 
 			GetIntensities(photos);
@@ -113,7 +112,7 @@ namespace AIFocusStacking.Services
 								else
 								{
 									//Stwórz nowy obiekt, który jest kopią aktualnego obiektu, ale jesgo intensywność jest równa 0
-									DetectedObject objectToAdd = new DetectedObject(photo.DetectedObjects[j].Mask, photo.DetectedObjects[j].Box, photo.DetectedObjects[j].Class) { Intensity = 0 };
+									DetectedObject objectToAdd = new(photo.DetectedObjects[j].Mask, photo.DetectedObjects[j].Box, photo.DetectedObjects[j].Class) { Intensity = 0 };
 
 									//Dodaj do aktualnego zdjęcia stworzony obiekt
 									photos[k].DetectedObjects!.Add(objectToAdd);
@@ -202,12 +201,12 @@ namespace AIFocusStacking.Services
 						{
 							photos[j].MatrixAfterLaplace!.At<byte>(bestObject.Mask[k].Y, bestObject.Mask[k].X) = 0;
 						}
-					}				
+					}
 				}
 				//Zapisz zdjęcia po filtrze Laplace'a
 				for (int j = 0; j < photos.Count; j++)
 				{
-					photos[j].MatrixAfterLaplace!.SaveImage($"laplace{j}.jpg");
+					_ = photos[j].MatrixAfterLaplace!.SaveImage($"laplace{j}.jpg");
 				}
 			}
 		}
@@ -235,21 +234,7 @@ namespace AIFocusStacking.Services
 					{
 						if ((int)masksJson[j]![k]! == 0)
 						{
-							if (k == 0)
-							{
-								if (j == 0)
-								{
-									masksJson[j][k] = 1;
-								}
-								else
-								{
-									masksJson[j][k] = masksJson[j - 1][masksJson[0].Count() - 1];
-								}
-							}
-							else
-							{
-								masksJson[j][k] = masksJson[j][k - 1];
-							}
+							masksJson[j][k] = k == 0 ? j == 0 ? (JToken)1 : masksJson[j - 1][masksJson[0].Count() - 1] : masksJson[j][k - 1];
 						}
 					}
 				}
@@ -262,7 +247,7 @@ namespace AIFocusStacking.Services
 					//Iteruj po punktach
 					for (int k = 0; k < masksJson.Count; k++)
 					{
-						for(int l = 0; l < masksJson[0].Count(); l++)
+						for (int l = 0; l < masksJson[0].Count(); l++)
 						{
 							//Jeśli klasa punktu jest równa aktualnej klasie 
 							if ((int)masksJson[k]![l]! == j)
@@ -277,13 +262,10 @@ namespace AIFocusStacking.Services
 					Rect box = Cv2.BoundingRect(currentMask);
 
 					//Stwórz kolekcję wykrytych obiektów jeśli nie istnieje
-					if (photo.DetectedObjects == null)
-					{
-						photo.DetectedObjects = new();
-					}
+					photo.DetectedObjects ??= new();
 
 					//Dodaj nowy obiekt do kolekcji
-					photo.DetectedObjects.Add(new DetectedObject(currentMask, box, (int)classesJson[j-1]));
+					photo.DetectedObjects.Add(new DetectedObject(currentMask, box, (int)classesJson[j - 1]));
 				}
 
 				//Iteruj po wykrytych obiektach
@@ -293,14 +275,14 @@ namespace AIFocusStacking.Services
 					List<Point> mask = photo.DetectedObjects[j].Mask;
 					Rect box = photo.DetectedObjects[j].Box;
 
-					
+
 
 					//Stwórz maskę i zamień na niej wszystkie piksele znajdujace się w aktualnym obiekcie na kolor biały
 					Mat Mask = new(imageToMask.Size(), imageToMask.Type(), new Scalar(0, 0, 0));
 					for (int k = 0; k < mask.Count; k++)
 					{
-						Mask.At<Vec3b>(mask[k].Y,mask[k].X) = new Vec3b(255,255,255);
-						
+						Mask.At<Vec3b>(mask[k].Y, mask[k].X) = new Vec3b(255, 255, 255);
+
 					}
 
 					int maskIntensity = 0;
@@ -321,7 +303,7 @@ namespace AIFocusStacking.Services
 						}
 					}
 					//Ustaw intensywność aktualnego obiektu na średnią intensywność pikseli
-					photo.DetectedObjects[j].Intensity = maskIntensity/numberOfPixels;
+					photo.DetectedObjects[j].Intensity = maskIntensity / numberOfPixels;
 				}
 
 			}
