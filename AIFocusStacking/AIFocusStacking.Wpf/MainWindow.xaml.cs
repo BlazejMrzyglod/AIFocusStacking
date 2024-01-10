@@ -41,6 +41,9 @@ namespace AIFocusStacking.Wpf
 		//3 - Panoptyczna segmentacja
 		private string? method;
 
+		//Wartość pewności powyżej której wykryty obiekt jest rejestrowany
+		private string confidence;
+
 		public MainWindow(IPhotoRepositoryService photoRepository, IFocusStackingService focusStackingService)
 		{
 			_photoRepository = photoRepository;
@@ -52,6 +55,7 @@ namespace AIFocusStacking.Wpf
 			laplaceSize = Convert.ToInt32(LaplaceSize.Text);
 			maskSize = Convert.ToInt32(MaskSize.Text);
 			_focusStackingService = focusStackingService;
+			confidence = Confidence.Text;
 		}
 
 		//Funkcja umożliwająca wybranie zdjęć
@@ -96,7 +100,7 @@ namespace AIFocusStacking.Wpf
 			IEnumerable<string> photos = _photoRepository.GetAll();
 
 			//Uruchom focus stacking
-			_focusStackingService.RunFocusStacking(photos, (bool)alignment!, (bool)gauss!, laplaceSize, gaussSize, (bool)takeAll!, maskSize, method!);
+			_focusStackingService.RunFocusStacking(photos, (bool)alignment!, (bool)gauss!, laplaceSize, gaussSize, (bool)takeAll!, maskSize, method!, confidence);
 			/*ObjectsWindow objectsWindow = new ObjectsWindow();
 			objectsWindow.Show();*/
 
@@ -139,6 +143,12 @@ namespace AIFocusStacking.Wpf
 		{
 			ComboBoxItem selectedItem = (ComboBoxItem)SelectMethod.SelectedItem;
 			method = selectedItem.Content.ToString();
+		}
+
+		private void Confidence_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			if (Confidence.Text.Length > 0)
+				confidence = Confidence.Text;
 		}
 	}
 

@@ -1,6 +1,7 @@
 ﻿using AIFocusStacking.Models;
 using Newtonsoft.Json.Linq;
 using OpenCvSharp;
+using System.Globalization;
 
 namespace AIFocusStacking.Services
 {
@@ -19,10 +20,10 @@ namespace AIFocusStacking.Services
 		}
 
 		//Uruchom panoptyczną segmentacje
-		public void RunPanopticSegmentation(List<Photo> photos)
+		public void RunPanopticSegmentation(List<Photo> photos, string confidence)
 		{
 			//Uruchom Detectron2
-			_commandsService.RunModel("3");
+			_commandsService.RunModel("3", confidence);
 
 			//Pobierz intensywności danych obiektów 
 			GetIntensities(photos);

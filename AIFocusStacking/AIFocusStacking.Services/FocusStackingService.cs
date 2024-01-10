@@ -46,7 +46,7 @@ namespace AIFocusStacking.Services
 
 		//Funckja wykonująca focus stacking
 		public ServiceResult RunFocusStacking(IEnumerable<string> photos, bool alignment, bool gauss, int laplaceSize, int gaussSize, 
-											  bool takeAll, int maskSize, string method)
+											  bool takeAll, int maskSize, string method, string confidence)
 		{
 			ServiceResult serviceResult = new();
 			try
@@ -99,11 +99,11 @@ namespace AIFocusStacking.Services
 				//Zależnie od metody użyj segmentacji zdjęcia
 				if (method == "2")
 				{
-					_instanceSegmentationService.RunInstanceSegmentation(_photos);
+					_instanceSegmentationService.RunInstanceSegmentation(_photos, confidence);
 				}
 				else if (method == "3")
 				{
-					_panopticSegmentationService.RunPanopticSegmentation(_photos);
+					_panopticSegmentationService.RunPanopticSegmentation(_photos, confidence);
 				}
 
 				//Ustawienie parametrów początkowych

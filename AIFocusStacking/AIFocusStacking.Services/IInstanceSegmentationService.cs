@@ -5,6 +5,6 @@ namespace AIFocusStacking.Services
 	//Interfejs serwisu odpowiedzialnego za segmentacje instancji
 	public interface IInstanceSegmentationService
 	{
-		void RunInstanceSegmentation(List<Photo> photos);
+		void RunInstanceSegmentation(List<Photo> photos, string confidence);
 	}
 }

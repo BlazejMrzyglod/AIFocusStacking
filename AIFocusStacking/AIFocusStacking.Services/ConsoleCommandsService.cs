@@ -18,7 +18,7 @@ namespace AIFocusStacking.Services
         }
 
         //Funkcja uruchamiająca Detectron2
-        public ServiceResult RunModel(string method)
+        public ServiceResult RunModel(string method, string confidence)
         {
             ServiceResult result = new();
             try
@@ -38,15 +38,11 @@ namespace AIFocusStacking.Services
                 //Plik z wagami modelu
                 string weights;
 
-                //Wartość graniczna pewności przy której obiekt jest wykrywany
-                string confidence;
-
                 //Ustawienia dla segmentacji instancji
 				if (method == "2")
                 {
                     configFile = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\configs\\Misc\\cascade_mask_rcnn_X_152_32x8d_FPN_IN5k_gn_dconv.yaml";//\\COCO-InstanceSegmentation\\mask_rcnn_X_101_32x8d_FPN_3x.yaml";
                     weights = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\demo\\model_0039999_e76410.pkl";// model_final_2d9806.pkl";
-                    confidence = "0.5";
 				}
 
                 //Ustawienia dla panoptycznej segmentacji
@@ -54,7 +50,6 @@ namespace AIFocusStacking.Services
                 {
                     configFile = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\configs\\Misc\\panoptic_fpn_R_101_dconv_cascade_gn_3x.yaml";//\\COCO-PanopticSegmentation\\panoptic_fpn_R_101_3x.yaml";
                     weights = "..\\..\\..\\..\\..\\..\\Detectron2\\detectron2\\demo\\model_final_be35db.pkl";// model_final_cafdb1.pkl";
-                    confidence = "1";
 				}
 
                 //Stwórz folder wyjściowy

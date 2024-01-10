@@ -20,10 +20,10 @@ namespace AIFocusStacking.Services
 		}
 
 		//Uruchom segmentacje instancji
-		public void RunInstanceSegmentation(List<Photo> photos)
+		public void RunInstanceSegmentation(List<Photo> photos, string confidence)
 		{
 			//Uruchom Detectron2
-			_commandsService.RunModel("2");
+			_commandsService.RunModel("2", confidence);
 
 			//Dodaj wykryte obiekty do zdjęć
 			GetObjects(photos);
