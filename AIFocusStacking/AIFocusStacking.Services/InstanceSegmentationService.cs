@@ -272,6 +272,7 @@ namespace AIFocusStacking.Services
 					//Aktualny obiekt
 					DetectedObject detectedObject = photo.DetectedObjects[j];
 					int maskIntensity = 0;
+					int numberOfPixels = 0;
 
 					//Stwórz maskę i narysuj na niej wypełniony, biały kontur aktualnego obiektu
 					Mat Mask = new(imageToMask.Size(), imageToMask.Type(), new Scalar(0, 0, 0));
@@ -287,11 +288,12 @@ namespace AIFocusStacking.Services
 							{
 								//Dodaj intensywność piksela z aktualnego zdjęcia po filtrze Laplace'a
 								maskIntensity += photo.MatrixAfterLaplace!.At<byte>(k, l);
+								numberOfPixels++;
 							}
 						}
 					}
-					//Ustaw intensywność aktualnego obiektu
-					detectedObject.Intensity = maskIntensity;
+					//Ustaw intensywność aktualnego obiektu na średnią intensywność pikseli
+					detectedObject.Intensity = maskIntensity/numberOfPixels;
 				}
 			}
 		}

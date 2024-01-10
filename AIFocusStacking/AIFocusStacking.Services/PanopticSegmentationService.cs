@@ -303,6 +303,7 @@ namespace AIFocusStacking.Services
 					}
 
 					int maskIntensity = 0;
+					int numberOfPixels = 0;
 
 					//Iteruj po wszystkich pikselach w zakresie ramki ograniczającej aktualnego obiektu
 					for (int k = box.Top + 1; k < box.Bottom; k++)
@@ -314,12 +315,12 @@ namespace AIFocusStacking.Services
 							{
 								//Dodaj intensywność piksela z aktualnego zdjęcia po filtrze Laplace'a
 								maskIntensity += photo.MatrixAfterLaplace!.At<byte>(k, l);
+								numberOfPixels++;
 							}
 						}
 					}
-
-					//Ustaw intensywność aktualnego obiektu
-					photo.DetectedObjects[j].Intensity = maskIntensity;
+					//Ustaw intensywność aktualnego obiektu na średnią intensywność pikseli
+					photo.DetectedObjects[j].Intensity = maskIntensity/numberOfPixels;
 				}
 
 			}
