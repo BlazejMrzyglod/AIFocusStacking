@@ -17,7 +17,7 @@ namespace AIFocusStacking.Services
 		{ 
 			_instanceSegmentationService = instanceSegmentationService; 
 			_panopticSegmentationService = panopticSegmentationService;
-			_photos = new List<Photo>();
+			_photos = new();
 		}
 
 		//Funkcja odpowiedzialna za wyrównywanie zdjęć
@@ -51,6 +51,7 @@ namespace AIFocusStacking.Services
 			ServiceResult serviceResult = new();
 			try
 			{
+				_photos = new();
 				//Ustaw pierwsze zdjęcie z listy jako zdjęcie referencyjne i dodaj do kolekcji
 				Mat referenceImage = new(photos.First());
 				_photos.Add(new Photo(referenceImage, photos.First()));
