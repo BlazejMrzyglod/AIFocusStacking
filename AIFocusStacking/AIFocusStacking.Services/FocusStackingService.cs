@@ -34,8 +34,21 @@ namespace AIFocusStacking.Services
 			Mat warpMatrix = Mat.Eye(2, 3, MatType.CV_32F);
 			TermCriteria criteria = new(CriteriaTypes.Count | CriteriaTypes.Eps, 500, 1e-10);
 
+			//Konwertuj zdjęcia do odpowiedniego formatu
+			grayReference.ConvertTo(grayReference, MatType.CV_8UC1);
+			grayCurrent.ConvertTo(grayCurrent, MatType.CV_8UC1);
+
 			//Wykonaj transformacji ECC
-			_ = Cv2.FindTransformECC(grayReference, grayCurrent, warpMatrix, MotionTypes.Euclidean, criteria);
+			try
+			{
+				_ = Cv2.FindTransformECC(grayReference, grayCurrent, warpMatrix, MotionTypes.Euclidean, criteria);
+			}
+			//Ochrona przed wyjątkami
+			//TODO: Poprawić i dodać komunikat
+			catch
+			{
+				return currentImage;
+			}
 
 			//Wyrównaj zdjęcia
 			Mat alignedImage = new();
@@ -53,14 +66,14 @@ namespace AIFocusStacking.Services
 			{
 				_photos = new();
 				//Ustaw pierwsze zdjęcie z listy jako zdjęcie referencyjne i dodaj do kolekcji
-				Mat referenceImage = new(photos.First());
+				Mat referenceImage = new(photos.First(), ImreadModes.Unchanged);
 				_photos.Add(new Photo(referenceImage, photos.First()));
 
 				//Dodaj pozostałe zdjęcia do kolekcji i ewentualnie wyrównaj
 				for (int i = 1; i < photos.Count(); i++)
 				{
-					//AKtualne zdjęcie
-					Mat currentImage = new(photos.ToArray()[i]);
+					//Aktualne zdjęcie
+					Mat currentImage = new(photos.ToArray()[i], ImreadModes.Unchanged);
 
 					//Dokonaj ewentualnego wyrównania
 					if (alignment)
