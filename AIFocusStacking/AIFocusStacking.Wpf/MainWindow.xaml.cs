@@ -12,7 +12,7 @@ namespace AIFocusStacking.Wpf
 	public partial class MainWindow : Window
 	{
 		//Repozytorium zdjęć
-		protected readonly IPhotoRepositoryService _photoRepository;
+		protected readonly IRepositoryService<string> _photoRepository;
 
 		//Serwis wykonujący focus stacking
 		protected readonly IFocusStackingService _focusStackingService;
@@ -44,7 +44,7 @@ namespace AIFocusStacking.Wpf
 		//Wartość pewności powyżej której wykryty obiekt jest rejestrowany
 		private string confidence;
 
-		public MainWindow(IPhotoRepositoryService photoRepository, IFocusStackingService focusStackingService)
+		public MainWindow(IRepositoryService<string> photoRepository, IFocusStackingService focusStackingService)
 		{
 			_photoRepository = photoRepository;
 			InitializeComponent();
@@ -70,7 +70,7 @@ namespace AIFocusStacking.Wpf
 			//Stwórz pliki w repozytorium zdjęć
 			if (fileDialog.ShowDialog() == true)
 			{
-				_ = _photoRepository.CreateMultiple(fileDialog.FileNames);
+				_ = _photoRepository.AddMultiple(fileDialog.FileNames);
 			}
 
 			//Dodaj zdjęcia do obszaru wyświetlającego zdjęcia
@@ -89,7 +89,7 @@ namespace AIFocusStacking.Wpf
 				string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 
 				//Stwórz pliki w repozytorium zdjęć
-				_ = _photoRepository.CreateMultiple(files);
+				_ = _photoRepository.AddMultiple(files);
 
 				//Dodaj zdjęcia do obszaru wyświetlającego zdjęcia
 				foreach (string file in files)

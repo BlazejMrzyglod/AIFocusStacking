@@ -12,10 +12,13 @@ namespace AIFocusStacking.Services
 
 		//Serwis odpowiedzialny za dobieranie wykrytych obiektów w pary
 		protected readonly IFeatureMatchingService _featureMatchingService;
-		public PanopticSegmentationService(IConsoleCommandsService commandsService, IFeatureMatchingService featureMatchingService)
+
+		protected readonly IRepositoryService<JArray> _jsonRepositoryService;
+		public PanopticSegmentationService(IConsoleCommandsService commandsService, IFeatureMatchingService featureMatchingService, IRepositoryService<JArray> jsonRepositoryService)
 		{
 			_commandsService = commandsService;
 			_featureMatchingService = featureMatchingService;
+			_jsonRepositoryService = jsonRepositoryService;
 		}
 
 		//Uruchom panoptyczną segmentacje
@@ -212,7 +215,7 @@ namespace AIFocusStacking.Services
 		}
 
 		//Funkcja pobierająca intensywności danych obiektów 
-		private static void GetIntensities(List<Photo> photos)
+		private void GetIntensities(List<Photo> photos)
 		{
 			//Iteruj po wszystkich zdjęciach
 			for (int i = 0; i < photos.Count; i++)
@@ -222,10 +225,10 @@ namespace AIFocusStacking.Services
 				Mat imageToMask = photos[i].Matrix.Clone();
 
 				//Kolekcja wszystkich obiektów wykrytych na zdjęciu pobrana z pliku json
-				JArray masksJson = JArray.Parse(File.ReadAllText($"panoptic_masks_{photo.Path.Split('\\').Last()}.json"));
+				JArray masksJson = _jsonRepositoryService.GetSingle($"panoptic_masks_{photo.Name.Split('\\').Last()}.json");
 
 				//Kolekcja wszystkich klas obiektów wykrytych na zdjęciu pobrana z pliku json
-				JArray classesJson = JArray.Parse(File.ReadAllText($"panoptic_classes_{photo.Path.Split('\\').Last()}.json"));
+				JArray classesJson = _jsonRepositoryService.GetSingle($"panoptic_classes_{photo.Name.Split('\\').Last()}.json");
 
 				//Zamień wszystkie punkty o wartości 0 na wartość wcześniejszego piksela
 				for (int j = 0; j < masksJson.Count; j++)

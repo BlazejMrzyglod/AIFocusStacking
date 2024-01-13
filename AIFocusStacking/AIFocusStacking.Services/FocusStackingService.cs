@@ -67,7 +67,7 @@ namespace AIFocusStacking.Services
 				_photos = new();
 				//Ustaw pierwsze zdjęcie z listy jako zdjęcie referencyjne i dodaj do kolekcji
 				Mat referenceImage = new(photos.First(), ImreadModes.Unchanged);
-				_photos.Add(new Photo(referenceImage, photos.First()));
+				_photos.Add(new Photo(referenceImage, photos.First().Split("\\").Last()));
 
 				//Dodaj pozostałe zdjęcia do kolekcji i ewentualnie wyrównaj
 				for (int i = 1; i < photos.Count(); i++)
@@ -79,11 +79,11 @@ namespace AIFocusStacking.Services
 					if (alignment)
 					{
 						Mat alignedImage = AlignImages(referenceImage, currentImage);
-						_photos.Add(new Photo(alignedImage, photos.ToArray()[i]));
+						_photos.Add(new Photo(alignedImage, photos.ToArray()[i].Split("\\").Last()));
 					}
 					else
 					{
-						_photos.Add(new Photo(currentImage, photos.ToArray()[i]));
+						_photos.Add(new Photo(currentImage, photos.ToArray()[i].Split("\\").Last()));
 					}
 				}
 

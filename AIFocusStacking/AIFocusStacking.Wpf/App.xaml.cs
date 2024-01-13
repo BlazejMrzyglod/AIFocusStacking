@@ -1,5 +1,6 @@
 ﻿using AIFocusStacking.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using System.Windows;
 
 namespace AIFocusStacking.Wpf
@@ -19,7 +20,8 @@ namespace AIFocusStacking.Wpf
 		private static void ConfigureServices(ServiceCollection services)
 		{
 			_ = services.AddSingleton<MainWindow>();
-			_ = services.AddScoped(typeof(IPhotoRepositoryService), typeof(PhotoRepositoryService));
+			_ = services.AddScoped(typeof(IRepositoryService<string>), typeof(PhotoRepositoryService));
+			_ = services.AddScoped(typeof(IRepositoryService<JArray>), typeof(JsonRepositoryService));
 			_ = services.AddScoped(typeof(IConsoleCommandsService), typeof(ConsoleCommandsService));
 			_ = services.AddScoped(typeof(IFocusStackingService), typeof(FocusStackingService));
 			_ = services.AddScoped(typeof(IInstanceSegmentationService), typeof(InstanceSegmentationService));
@@ -33,9 +35,11 @@ namespace AIFocusStacking.Wpf
 		}
 		protected override void OnExit(ExitEventArgs e)
 		{
-			IPhotoRepositoryService photoRepositoryService = serviceProvider.GetService<IPhotoRepositoryService>()!;
+			IRepositoryService<string> photoRepositoryService = serviceProvider.GetService<IRepositoryService<string>>()!;
+			IRepositoryService<JArray> jsonRepositoryService = serviceProvider.GetService<IRepositoryService<JArray>>()!;
 			IConsoleCommandsService consoleCommandsService = serviceProvider.GetService<IConsoleCommandsService>()!;
 			_ = photoRepositoryService.DeleteAll();
+			_ = jsonRepositoryService.DeleteAll();
 			_ = consoleCommandsService.ClearOutputDirectory();
 			base.OnExit(e);
 		}

@@ -12,10 +12,13 @@ namespace AIFocusStacking.Services
 
 		//Serwis odpowiedzialny za dobieranie wykrytych obiektów w pary
 		protected readonly IFeatureMatchingService _featureMatchingService;
-		public InstanceSegmentationService(IConsoleCommandsService commandsService, IFeatureMatchingService featureMatchingService)
+
+		protected readonly IRepositoryService<JArray> _jsonRepositoryService;
+		public InstanceSegmentationService(IConsoleCommandsService commandsService, IFeatureMatchingService featureMatchingService, IRepositoryService<JArray> jsonRepositoryService)
 		{
 			_commandsService = commandsService;
 			_featureMatchingService = featureMatchingService;
+			_jsonRepositoryService = jsonRepositoryService;
 		}
 
 		//Uruchom segmentacje instancji
@@ -210,7 +213,7 @@ namespace AIFocusStacking.Services
 		}
 
 		//Funkcja dodająca wykryte obiekty do zdjęć
-		private static void GetObjects(List<Photo> photos)
+		private void GetObjects(List<Photo> photos)
 		{
 			//Iteruj przez wszystkie zdjęcia
 			for (int i = 0; i < photos.Count; i++)
@@ -219,10 +222,10 @@ namespace AIFocusStacking.Services
 				Photo photo = photos[i];
 
 				//Kolekcja wszystkich konturów obiektów wykrytych na zdjęciu pobrana z pliku json
-				JArray contoursJson = JArray.Parse(File.ReadAllText($"contours_{photo.Path.Split('\\').Last()}.json"));
+				JArray contoursJson = _jsonRepositoryService.GetSingle($"contours_{photo.Name.Split('\\').Last()}.json");
 
 				//Kolekcja wszystkich klas obiektów wykrytych na zdjęciu pobrana z pliku json
-				JArray classesJson = JArray.Parse(File.ReadAllText($"classes_{photo.Path.Split('\\').Last()}.json"));
+				JArray classesJson = _jsonRepositoryService.GetSingle($"classes_{photo.Name.Split('\\').Last()}.json");
 
 				//Stwórz kolekcję wykrytych obiektów jeśli nie istnieje
 				photo.DetectedObjects ??= new();

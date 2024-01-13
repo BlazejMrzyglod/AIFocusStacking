@@ -6,12 +6,12 @@ namespace AIFocusStacking.Services
 	public class ConsoleCommandsService : IConsoleCommandsService
 	{
 		//Repozytorium zdjęć
-		protected IPhotoRepositoryService _photoRepository;
+		protected IRepositoryService<string> _photoRepository;
 
 		//Folder do przechowywania zdjęć z wykrytymi obiektami
 		protected string outputDirectory;
 
-		public ConsoleCommandsService(IPhotoRepositoryService photoRepository)
+		public ConsoleCommandsService(IRepositoryService<string> photoRepository)
 		{
 			_photoRepository = photoRepository;
 			outputDirectory = "outputImages";
