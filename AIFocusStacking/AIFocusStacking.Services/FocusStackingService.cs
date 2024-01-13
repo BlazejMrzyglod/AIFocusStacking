@@ -199,9 +199,9 @@ namespace AIFocusStacking.Services
 		private void TakeSinglePixel(Mat result, ref byte maxIntensity, ref byte intensity, int maskSize)
 		{
 			//Iteruj po wszystkich pikselach zdjęcia
-			for (int i = maskSize; i < result.Rows - maskSize; i++)
+			for (int i = 0; i < result.Rows; i++)
 			{
-				for (int j = maskSize; j < result.Cols - maskSize; j++)
+				for (int j = 0; j < result.Cols; j++)
 				{
 					maxIntensity = 0;
 
@@ -214,8 +214,12 @@ namespace AIFocusStacking.Services
 						//Jeśli maskSize = 0 sprawdzany jest tylko dany piksel
 						for (int x = -maskSize; x <= maskSize; x++)
 						{
+							if (i + x < 0 || i + x >= result.Rows)
+								continue;
 							for (int y = -maskSize; y <= maskSize; y++)
 							{
+								if (j + y < 0 || j + y >= result.Cols)
+									continue;
 								intensity += _photos[z].MatrixAfterLaplace!.At<byte>(i + x, j + y);
 							}
 						}
