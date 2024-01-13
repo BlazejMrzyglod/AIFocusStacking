@@ -8,8 +8,8 @@ namespace AIFocusStacking.Models
 		//Oryginalne zdjęcie
 		public Mat Matrix { get; set; }
 
-		//Ścieżka do zdjęcia
-		public string Path { get; set; }
+		//Nazwa zdjęcia
+		public string Name { get; set; }
 
 		//Zdjęcie po filtrze Laplace'a
 		public Mat? MatrixAfterLaplace { get; set; }
@@ -17,10 +17,10 @@ namespace AIFocusStacking.Models
 		//Kolekcja obiektów wykrytych na tym zdjęciu
 		public List<DetectedObject>? DetectedObjects { get; set; }
 
-		public Photo(Mat matrix, string path)
+		public Photo(Mat matrix, string name)
 		{
 			Matrix = matrix;
-			Path = path;
+			Name = name;
 		}
 
 	}

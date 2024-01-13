@@ -139,7 +139,7 @@ namespace AIFocusStacking.Services
 				}
 
 				//Zapisz zdjęcie
-				_ = result.SaveImage("result." + _photos.First().Path.Split(".").Last());
+				_ = result.SaveImage("result." + _photos.First().Name.Split(".").Last());
 
 				serviceResult.Result = ServiceResultStatus.Succes;
 			}
