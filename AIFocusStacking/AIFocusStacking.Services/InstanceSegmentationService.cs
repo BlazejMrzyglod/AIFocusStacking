@@ -50,6 +50,8 @@ namespace AIFocusStacking.Services
 			//Iteruj przez wszystkie kolekcje dobranych obiektów
 			for (int i = 0; i < matchedObjects.Count; i++)
 			{
+				//Aktualna lista dopasowanych obiektów
+				List<DetectedObject> currentList = matchedObjects[i];
 				//Największa intensywność pikseli
 				int maxMaskIntensity = 0;
 				//Obiekt z największą intensywnością pikseli
@@ -58,7 +60,11 @@ namespace AIFocusStacking.Services
 				//Wybierz obiekt z największą intensywnością pikseli
 				for (int j = 0; j < photos.Count; j++)
 				{
-					if (matchedObjects[i][j].Intensity > maxMaskIntensity) { maxMaskIntensity = (int)matchedObjects[i][j].Intensity!; bestObject = matchedObjects[i][j]; }
+					if (currentList[j].Intensity > maxMaskIntensity) 
+					{
+						maxMaskIntensity = (int)currentList[j].Intensity!;
+						bestObject = currentList[j]; 
+					}
 				}
 
 				//Zdjęcie zawierające obiekt z największą intensywnością pikseli
@@ -67,14 +73,15 @@ namespace AIFocusStacking.Services
 				//Iteruj przez wszystkie zdjęcia
 				for (int j = 0; j < photos.Count; j++)
 				{
+					Photo photo = photos[j];
 					//Jeśli zdjęcie zawiera obiekt z największą intensywnością pikseli
-					if (photos[j].DetectedObjects!.Contains(bestObject))
+					if (photo.DetectedObjects!.Contains(bestObject))
 					{
 						//Narysuj wypełniony biały kontur danego obiektu na zdjęciu po filtrze Laplace'a
-						Cv2.DrawContours(photos[j].MatrixAfterLaplace!, new List<List<Point>>() { bestObject.Mask }, -1, new Scalar(255, 255, 255), -1);
+						Cv2.DrawContours(photo.MatrixAfterLaplace!, new List<List<Point>>() { bestObject.Mask }, -1, new Scalar(255, 255, 255), -1);
 
 						//Zapisz zdjęcie zawierające obiekt z największą intensywnością pikseli
-						photoWithBestObject = photos[j];
+						photoWithBestObject = photo;
 						break;
 					}
 				}
@@ -82,26 +89,28 @@ namespace AIFocusStacking.Services
 				//Iteruj przez wszystkie zdjęcia
 				for (int j = 0; j < photos.Count; j++)
 				{
+					Photo photo = photos[j];
 					//Jeśli zdjęcie nie zawiera obiektu z największą intensywnością pikseli
-					if (photos[j] != photoWithBestObject)
+					if (photo != photoWithBestObject)
 					{
 						//Iteruj przez wszystkie wykryte obiekty na danym zdjęciu
-						for (int k = 0; k < photos[j].DetectedObjects!.Count; k++)
+						for (int k = 0; k < photo.DetectedObjects!.Count; k++)
 						{
+							DetectedObject objectToCheck = photo.DetectedObjects![k];
 							//Jeśli dany obiekt znajduje się w aktualnej kolekcji dopasowanych obiektów 
-							if (matchedObjects[i].Contains(photos[j].DetectedObjects![k]))
+							if (currentList.Contains(objectToCheck))
 							{
 								//Narysuj wypełniony czarny kontur danego obiektu na zdjęciu po filtrze Laplace'a, które nie zawieraja obiektu z największą intensywnością pikseli
-								Cv2.DrawContours(photos[j].MatrixAfterLaplace!, new List<List<Point>>() { photos[j].DetectedObjects![k].Mask }, -1, new Scalar(0, 0, 0), -1);
+								Cv2.DrawContours(photo.MatrixAfterLaplace!, new List<List<Point>>() { objectToCheck.Mask }, -1, new Scalar(0, 0, 0), -1);
 
 								//Narysuj wypełniony biały kontur danego obiektu na zdjęciu po filtrze Laplace'a, które zawieraja obiekt z największą intensywnością pikseli
-								Cv2.DrawContours(photoWithBestObject.MatrixAfterLaplace!, new List<List<Point>>() { photos[j].DetectedObjects![k].Mask }, -1, new Scalar(255, 255, 255), -1);
+								Cv2.DrawContours(photoWithBestObject.MatrixAfterLaplace!, new List<List<Point>>() { objectToCheck.Mask }, -1, new Scalar(255, 255, 255), -1);
 								break;
 							}
 						}
 
 						//Narysuj wypełniony czarny kontur obiektu z największą intensywnością pikseli na zdjęciu po filtrze Laplace'a, które go nie zawiera
-						Cv2.DrawContours(photos[j].MatrixAfterLaplace!, new List<List<Point>>() { bestObject.Mask }, -1, new Scalar(0, 0, 0), -1);
+						Cv2.DrawContours(photo.MatrixAfterLaplace!, new List<List<Point>>() { bestObject.Mask }, -1, new Scalar(0, 0, 0), -1);
 					}
 				}
 				//Zapisz zdjęcia po filtrze Laplace'a
@@ -122,32 +131,31 @@ namespace AIFocusStacking.Services
 			//Lista kolekcji tych samych obiektów
 			List<List<DetectedObject>> sameObjects = new();
 
-			//Graniczna liczba dopasowań po któej stwoerdza się, że obiekty są te same
-			int matchesCutOff = 0;
-
 			//Iteruj przez wszystkie zdjęcia
 			for (int i = 0; i < photos.Count; i++)
 			{
 				//Aktualne zdjęcie
 				Photo photo = photos[i];
-
+				
 				//Iteruj przez wszystkie wykryte obiekty danego zdjęcia
 				for (int j = 0; j < photo.DetectedObjects!.Count; j++)
 				{
+					DetectedObject detectedObject = photo.DetectedObjects[j];
+
 					//Jeśli obiekt jeszcze nie został dopasowany
-					if (!matchedObjects.Contains(photo.DetectedObjects[j]))
+					if (!matchedObjects.Contains(detectedObject))
 					{
 						//Dodaj obiekt do dopasowanych
-						matchedObjects.Add(photo.DetectedObjects[j]);
+						matchedObjects.Add(detectedObject);
 
 						//Inicjalizuj liste aktualnie dopasowanych obiektów
 						List<DetectedObject> currentMatchedObjects = new()
 						{
-							photo.DetectedObjects[j]
+							detectedObject
 						};
 
 						//Stwórz podmacierz zawierającą dany obiekt
-						Mat objectMatrix = photo.Matrix.SubMat(photo.DetectedObjects[j].Box);
+						Mat objectMatrix = photo.Matrix.SubMat(detectedObject.Box);
 
 						//Iteruj przez wszystkie zdjęcia
 						for (int k = 0; k < photos.Count; k++)
@@ -161,14 +169,16 @@ namespace AIFocusStacking.Services
 								//Iteruj przez wszystkie wykryte obiekty danego zdjęcia
 								for (int l = 0; l < photos[k].DetectedObjects!.Count; l++)
 								{
+									DetectedObject objectToCheck = photos[k].DetectedObjects![l];
+
 									//Jeśli obiekt ma taką samą klasę jak obiekt do którego go dopasowywujemy oraz nie został jeszcze dopasowany
-									if (photos[k].DetectedObjects![l].Class == photo.DetectedObjects[j].Class && !matchedObjects.Contains(photos[k].DetectedObjects![l]))
+									if (objectToCheck.Class == detectedObject.Class && !matchedObjects.Contains(objectToCheck))
 									{
 										//Stwórz podmacierz zawierającą dany obiekt
-										Mat checkedObjectMatrix = photos[k].Matrix.SubMat(photos[k].DetectedObjects![l].Box);
+										Mat objectToCheckMatrix = photos[k].Matrix.SubMat(objectToCheck.Box);
 
 										//Pobierz liczbę dopasowanych punktów kluczowych
-										int amountOfMatches = _featureMatchingService.GetAmountOfMatches(objectMatrix, checkedObjectMatrix);
+										int amountOfMatches = _featureMatchingService.GetAmountOfMatches(objectMatrix, objectToCheckMatrix);
 
 										/* Jeśli liczba dopasowanych punktów kluczowych jest największa spośród obiektów na danym zdjęciu,
 										wybierz ten obiekt jako dopasowanie */
@@ -180,18 +190,19 @@ namespace AIFocusStacking.Services
 									}
 								}
 
-								//Jeśli liczba dopasowanych punktów kluczowych jest większa niż wartość graniczna oraz obiekt nie został jeszcze dopasowany
-								if (mostMatches >= matchesCutOff && !matchedObjects.Contains(photos[k].DetectedObjects![index]))
+								DetectedObject bestObject = photos[k].DetectedObjects![index];
+								//Jeśli obiekt nie został jeszcze dopasowany
+								if (!matchedObjects.Contains(bestObject))
 								{
 									//Dodaj obiekt do obiektów już dopasowanych i aktualnie dopasowywanych obiektów
-									matchedObjects.Add(photos[k].DetectedObjects![index]);
-									currentMatchedObjects.Add(photos[k].DetectedObjects![index]);
+									matchedObjects.Add(bestObject);
+									currentMatchedObjects.Add(bestObject);
 								}
 								//Jeśli nie
 								else
 								{
 									//Stwórz nowy obiekt, który jest kopią aktualnego obiektu, ale jesgo intensywność jest równa 0
-									DetectedObject objectToAdd = new(photo.DetectedObjects[j].Mask, photo.DetectedObjects[j].Box, photo.DetectedObjects[j].Class) { Intensity = 0 };
+									DetectedObject objectToAdd = new(detectedObject.Mask, detectedObject.Box, detectedObject.Class) { Intensity = 0 };
 
 									//Dodaj do aktualnego zdjęcia stworzony obiekt
 									photos[k].DetectedObjects!.Add(objectToAdd);
@@ -241,17 +252,17 @@ namespace AIFocusStacking.Services
 					JToken? _class = classesJson[j];
 
 					//Pobierz wszystkie punkty konturu
-					List<Point> currentContour = new();
+					List<Point> contourPoints = new();
 					foreach (JToken points in contour)
 					{
-						currentContour.Add(new Point((int)points[0]![0]!, (int)points[0]![1]!));
+						contourPoints.Add(new Point((int)points[0]![0]!, (int)points[0]![1]!));
 					}
 
 					//Stwórz ramkę ograniczająca danego obiektu
-					Rect currentBox = Cv2.BoundingRect(currentContour);
+					Rect currentBox = Cv2.BoundingRect(contourPoints);
 
 					//Dodaj nowy obiekt do kolekcji
-					photo.DetectedObjects!.Add(new DetectedObject(currentContour, currentBox, (int)_class));
+					photo.DetectedObjects!.Add(new DetectedObject(contourPoints, currentBox, (int)_class));
 				}
 			}
 		}
