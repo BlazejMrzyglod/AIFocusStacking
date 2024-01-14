@@ -8,10 +8,14 @@ using System.Threading.Tasks;
 
 namespace AIFocusStacking.Services
 {
+	//Repozytorium plików json
 	public class JsonRepositoryService : IRepositoryService<JArray>
 	{
+		//Folder zawierający pliki
 		protected string _repositoryFolder = "jsonFiles";
 
+		//Dodaj plik do folderu
+		//Funkcja kopiuje plik, który już istnieje na dysku
 		public ServiceResult Add(string path)
 		{
 			ServiceResult result = new();
@@ -20,7 +24,7 @@ namespace AIFocusStacking.Services
 				//Stwórz folder
 				_ = Directory.CreateDirectory(_repositoryFolder);
 
-				//Kopiuj zdjęcie do folderu
+				//Kopiuj plik do folderu
 				File.Copy(path, _repositoryFolder + "\\" + path.Split("\\").Last());
 
 				result.Result = ServiceResultStatus.Succes;
@@ -33,6 +37,8 @@ namespace AIFocusStacking.Services
 			return result;
 		}
 
+		//Dodaj pliki do folderu
+		//Funkcja kopiuje pliki, które już istnieją na dysku
 		public ServiceResult AddMultiple(string[] paths)
 		{
 			ServiceResult result = new();
@@ -41,7 +47,7 @@ namespace AIFocusStacking.Services
 				// Stwórz folder
 				_ = Directory.CreateDirectory(_repositoryFolder);
 
-				//Kopiuj zdjęcia do folderu
+				//Kopiuj pliki do folderu
 				foreach (string path in paths)
 				{
 					File.Copy(path, _repositoryFolder + "\\" + path.Split("\\").Last());
@@ -57,6 +63,7 @@ namespace AIFocusStacking.Services
 			return result;
 		}
 
+		//Usuń plik z folderu
 		public ServiceResult Delete(string name)
 		{
 			ServiceResult result = new();
@@ -73,6 +80,7 @@ namespace AIFocusStacking.Services
 			return result;
 		}
 
+		//Usuń cały folder
 		public ServiceResult DeleteAll()
 		{
 			ServiceResult result = new();
@@ -89,6 +97,7 @@ namespace AIFocusStacking.Services
 			return result;
 		}
 
+		//Usuń pliki z folderu
 		public ServiceResult DeleteMultiple(string[] names)
 		{
 			ServiceResult result = new();
@@ -108,6 +117,7 @@ namespace AIFocusStacking.Services
 			return result;
 		}
 
+		//Pobierz tablice ze wszystkich plików
 		public IEnumerable<JArray> GetAll()
 		{
 			IEnumerable<string> paths = Directory.GetFiles(_repositoryFolder);
@@ -117,6 +127,7 @@ namespace AIFocusStacking.Services
 			}
 		}
 
+		//Pobierz tablice z wybranych plików
 		public IEnumerable<JArray> GetMultiple(string[] names)
 		{
 			foreach (string name in names)
@@ -125,6 +136,7 @@ namespace AIFocusStacking.Services
 			}
 		}
 
+		//Pobierz tablice z pliku
 		public JArray GetSingle(string name)
 		{
 			return JArray.Parse(File.ReadAllText($"{_repositoryFolder}\\{name}"));

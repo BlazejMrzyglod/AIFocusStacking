@@ -8,7 +8,8 @@ namespace AIFocusStacking.Services
 		//Folder zawierający zdjęcia
 		protected string _repositoryFolder = "images";
 
-		//Stwórz zdjęcie w folderze
+		//Dodaj zdjęcie do folderu
+		//Funkcja kopiuje zdjęcie, które już istnieje na dysku
 		public ServiceResult Add(string path)
 		{
 			ServiceResult result = new();
@@ -30,7 +31,8 @@ namespace AIFocusStacking.Services
 			return result;
 		}
 
-		//Stwórz zdjęcia w folderze
+		//Dodaj zdjęcia do folderu
+		//Funkcja kopiuje zdjęcia, które już istnieją na dysku
 		public ServiceResult AddMultiple(string[] paths)
 		{
 			ServiceResult result = new();
@@ -94,7 +96,7 @@ namespace AIFocusStacking.Services
 			return result;
 		}
 
-		//Usuń wszystkie zdjęcia
+		//Usuń cały folder
 		public ServiceResult DeleteAll()
 		{
 			ServiceResult result = new();
@@ -111,20 +113,20 @@ namespace AIFocusStacking.Services
 			return result;
 		}
 
-		//Pobierz wszystkie zdjęcia
+		//Pobierz adres wszystkich zdjęć
 		public IEnumerable<string> GetAll()
 		{
 			IEnumerable<string> paths = Directory.GetFiles(_repositoryFolder);
 			return paths;
 		}
 
-		//Pobierz wiele zdjęć
+		//Pobierz adres wielu zdjęć
 		public IEnumerable<string> GetMultiple(string[] names)
 		{
 			return Directory.GetFiles(_repositoryFolder).Where(r => names.Contains(r.Split("\\").Last()));
 		}
 
-		//Pobierz zdjęcie
+		//Pobierz adres zdjęci
 		public string GetSingle(string name)
 		{
 			return Directory.GetFiles(_repositoryFolder).Where(r => r.Split("\\").Last() == name).SingleOrDefault()!;

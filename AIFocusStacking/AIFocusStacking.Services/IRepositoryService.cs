@@ -1,6 +1,6 @@
 ﻿namespace AIFocusStacking.Services
 {
-	//Interfejs repozytorium zdjęć
+	//Interfejs repozytorium
 	public interface IRepositoryService<T>
 	{
 		IEnumerable<T> GetAll();

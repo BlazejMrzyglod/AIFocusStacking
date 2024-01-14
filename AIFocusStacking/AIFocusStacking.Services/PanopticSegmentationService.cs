@@ -13,6 +13,7 @@ namespace AIFocusStacking.Services
 		//Serwis odpowiedzialny za dobieranie wykrytych obiektów w pary
 		protected readonly IFeatureMatchingService _featureMatchingService;
 
+		//Repozytprium plikó json
 		protected readonly IRepositoryService<JArray> _jsonRepositoryService;
 		public PanopticSegmentationService(IConsoleCommandsService commandsService, IFeatureMatchingService featureMatchingService, IRepositoryService<JArray> jsonRepositoryService)
 		{

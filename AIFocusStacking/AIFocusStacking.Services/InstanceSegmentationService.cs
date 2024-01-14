@@ -13,6 +13,7 @@ namespace AIFocusStacking.Services
 		//Serwis odpowiedzialny za dobieranie wykrytych obiektów w pary
 		protected readonly IFeatureMatchingService _featureMatchingService;
 
+		//Repozytorium plików json
 		protected readonly IRepositoryService<JArray> _jsonRepositoryService;
 		public InstanceSegmentationService(IConsoleCommandsService commandsService, IFeatureMatchingService featureMatchingService, IRepositoryService<JArray> jsonRepositoryService)
 		{
