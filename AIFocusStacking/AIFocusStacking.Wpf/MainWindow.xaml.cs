@@ -106,9 +106,21 @@ namespace AIFocusStacking.Wpf
 			IEnumerable<string> photos = _photoRepository.GetAll();
 
 			//Uruchom focus stacking
-			_ = _focusStackingService.RunFocusStacking(photos, (bool)alignment!, (bool)gauss!, laplaceSize, gaussSize, (bool)takeAll!, maskSize, method!, confidence);
-			/*ObjectsWindow objectsWindow = new ObjectsWindow();
-			objectsWindow.Show();*/
+			ServiceResult result = _focusStackingService.RunFocusStacking(photos, (bool)alignment!, (bool)gauss!, laplaceSize, gaussSize, (bool)takeAll!, maskSize, method!, confidence);
+			if (result.Result == ServiceResultStatus.Error)
+			{
+				MessageBoxButton button = MessageBoxButton.OK;
+				MessageBoxImage icon = MessageBoxImage.Error;
+
+				string messages = "";
+				foreach (string message in result.Messages)
+				{
+					messages += message;
+					messages += "\n";
+				}
+						
+				_ = MessageBox.Show(messages, "Błąd", button, icon);
+			}
 
 		}
 
