@@ -32,6 +32,12 @@ namespace AIFocusStacking.Wpf
 		{
 			MainWindow? mainWindow = serviceProvider.GetService<MainWindow>();
 			mainWindow!.Show();
+			IRepositoryService<string> photoRepositoryService = serviceProvider.GetService<IRepositoryService<string>>()!;
+			IRepositoryService<JArray> jsonRepositoryService = serviceProvider.GetService<IRepositoryService<JArray>>()!;
+			IConsoleCommandsService consoleCommandsService = serviceProvider.GetService<IConsoleCommandsService>()!;
+			_ = photoRepositoryService.DeleteAll();
+			_ = jsonRepositoryService.DeleteAll();
+			_ = consoleCommandsService.ClearOutputDirectory();
 		}
 		protected override void OnExit(ExitEventArgs e)
 		{
