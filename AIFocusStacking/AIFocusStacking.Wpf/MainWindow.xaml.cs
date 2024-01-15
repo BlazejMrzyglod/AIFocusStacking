@@ -2,8 +2,10 @@
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
 namespace AIFocusStacking.Wpf
@@ -76,7 +78,7 @@ namespace AIFocusStacking.Wpf
 			//Dodaj zdjęcia do obszaru wyświetlającego zdjęcia
 			foreach (string? file in fileDialog.FileNames)
 			{
-				_ = ImagesWrapPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(file)), Height = 200, Width = 200 });
+				_ = ImagesWrapPanel.Children.Add(new CustomImage(new Uri(file), ImagesWrapPanel, _photoRepository));
 			}
 		}
 
@@ -94,7 +96,7 @@ namespace AIFocusStacking.Wpf
 				//Dodaj zdjęcia do obszaru wyświetlającego zdjęcia
 				foreach (string file in files)
 				{
-					_ = ImagesWrapPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(file)), Height = 200, Width = 200 });
+					_ = ImagesWrapPanel.Children.Add(new CustomImage(new Uri(file), ImagesWrapPanel, _photoRepository));
 				}
 			}
 		}
@@ -118,7 +120,7 @@ namespace AIFocusStacking.Wpf
 					messages += message;
 					messages += "\n";
 				}
-						
+
 				_ = MessageBox.Show(messages, "Błąd", button, icon);
 			}
 
@@ -176,6 +178,75 @@ namespace AIFocusStacking.Wpf
 				confidence = Confidence.Text;
 			}
 		}
+
+		private void DeletePhotos_Click(object sender, RoutedEventArgs e)
+		{
+			_photoRepository.DeleteAll();
+			ImagesWrapPanel.Children.Clear();
+		}
 	}
+
+
+	public class CustomImage : UserControl
+	{
+		protected Image _image;
+		protected Button _button;
+		protected WrapPanel _wrapPanel;
+		protected IRepositoryService<string> _photoRepository;
+		protected string _name;
+
+		public CustomImage(Uri imageUri, WrapPanel wrapPanel, IRepositoryService<string> photoRepository)
+		{
+			_image = new Image
+			{
+				Source = new BitmapImage(imageUri),
+				Height = 200,
+				Width = 200,
+			};
+			_button = new Button
+			{
+				Content = "Usuń",
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Center,
+				Visibility = Visibility.Hidden
+			};
+			_button.Click += Button_Click;
+
+			_wrapPanel = wrapPanel;
+			_photoRepository = photoRepository;
+			_name = imageUri.OriginalString.Split("\\").Last();
+
+			InitializeComponents();
+			MouseEnter += CustomImage_MouseEnter;
+			MouseLeave += CustomImage_MouseLeave;
+		}
+
+		private void InitializeComponents()
+		{
+			Grid grid = new();
+			grid.Children.Add(_image);
+			grid.Children.Add(_button);
+
+			Content = grid;
+		}
+
+		private void CustomImage_MouseEnter(object sender, MouseEventArgs e)
+		{
+			_button.Visibility = Visibility.Visible;
+		}
+
+		private void CustomImage_MouseLeave(object sender, MouseEventArgs e)
+		{
+			_button.Visibility = Visibility.Hidden;
+		}
+
+		private void Button_Click(object sender, RoutedEventArgs e)
+		{
+			_wrapPanel.Children.Remove(this);
+			_photoRepository.Delete(_name);
+		}
+	}
+
+
 
 }
