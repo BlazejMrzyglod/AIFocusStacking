@@ -63,6 +63,8 @@ namespace AIFocusStacking.Services
 				start.Arguments = $"/C python {script} --config-file {configFile} --input {string.Join(" ", photos)} --output {outputDirectory} --confidence-threshold {confidence} --opts {options} MODEL.WEIGHTS {weights}";
 				start.UseShellExecute = false;
 				start.RedirectStandardOutput = true;
+				start.CreateNoWindow = true;
+
 				using (Process process = Process.Start(start)!)
 				{
 					using StreamReader reader = process!.StandardOutput;
