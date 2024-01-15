@@ -64,6 +64,12 @@ namespace AIFocusStacking.Services
 			ServiceResult serviceResult = new();
 			try
 			{
+				//Co najmniej dwa zdjęcia wymagane
+				if (photos.Count() < 2)
+				{
+					throw new Exception("Dodaj co najmniej dwa zdjęcia");
+				}
+
 				_photos = new();
 				//Ustaw pierwsze zdjęcie z listy jako zdjęcie referencyjne i dodaj do kolekcji
 				Mat referenceImage = new(photos.First(), ImreadModes.Unchanged);
