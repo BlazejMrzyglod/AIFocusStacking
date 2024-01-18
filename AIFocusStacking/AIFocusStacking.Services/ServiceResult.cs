@@ -24,21 +24,11 @@ namespace AIFocusStacking.Services
 		//Wiadomość zwracana
 		public ICollection<string> Messages { get; set; }
 
+		//Konstruktor
 		public ServiceResult()
 		{
 			Result = ServiceResultStatus.Succes;
 			Messages = new List<string>();
 		}
-
-		//Słownik tworzący obiekt zwracany zależnie od wiadomości
-		public static Dictionary<string, ServiceResult> CommonResults { get; set; } = new Dictionary<string, ServiceResult>()
-		{
-			  {"NotFound" , new ServiceResult() {
-				  Result =ServiceResultStatus.Error,
-				  Messages = new List<string>( new string[] { "Nie znaleziono pliku" })  } },
-			  {"OK" , new ServiceResult() {
-				  Result =ServiceResultStatus.Succes,
-				  Messages = new List<string>()  } }
-		};
 	}
 }

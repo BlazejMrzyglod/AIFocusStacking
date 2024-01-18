@@ -16,7 +16,8 @@ namespace AIFocusStacking.Models
 
 		//Kolekcja obiektów wykrytych na tym zdjęciu
 		public List<DetectedObject>? DetectedObjects { get; set; }
-
+		
+		//Konstruktor
 		public Photo(Mat matrix, string name)
 		{
 			Matrix = matrix;
