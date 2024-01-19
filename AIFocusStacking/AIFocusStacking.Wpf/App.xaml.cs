@@ -22,6 +22,7 @@ namespace AIFocusStacking.Wpf
 		{
 			_ = services.AddSingleton<MainWindow>();
 			_ = services.AddSingleton<HomePage>();
+			_ = services.AddSingleton<ResultsPage>();
 			_ = services.AddScoped(typeof(IRepositoryService<string>), typeof(PhotoRepositoryService));
 			_ = services.AddScoped(typeof(IRepositoryService<JArray>), typeof(JsonRepositoryService));
 			_ = services.AddScoped(typeof(IConsoleCommandsService), typeof(ConsoleCommandsService));

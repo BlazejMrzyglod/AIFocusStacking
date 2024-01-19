@@ -55,7 +55,9 @@ namespace AIFocusStacking.Wpf.Pages
 		//Wartość pewności powyżej której wykryty obiekt jest rejestrowany
 		private string confidence;
 
-		public HomePage(IRepositoryService<string> photoRepository, IFocusStackingService focusStackingService)
+		private readonly ResultsPage _resultPage;
+
+		public HomePage(IRepositoryService<string> photoRepository, IFocusStackingService focusStackingService, ResultsPage resultPage)
 		{
 			_photoRepository = photoRepository;
 			InitializeComponent();
@@ -67,6 +69,7 @@ namespace AIFocusStacking.Wpf.Pages
 			maskSize = Convert.ToInt32(MaskSize.Text);
 			_focusStackingService = focusStackingService;
 			confidence = Confidence.Text;
+			_resultPage = resultPage;
 		}
 
 		//Funkcja umożliwająca wybranie zdjęć
@@ -135,9 +138,10 @@ namespace AIFocusStacking.Wpf.Pages
 
 				_ = MessageBox.Show(messages, "Błąd", button, icon);
 			}
-			else
+			else if(result.Result == ServiceResultStatus.Succes)
 			{
-				
+				_resultPage.GetResults();
+				NavigationService.Navigate(_resultPage);
 			}
 
 			//Wyłącz ikonę ładowania
@@ -232,6 +236,7 @@ namespace AIFocusStacking.Wpf.Pages
 				Source = new BitmapImage(imageUri),
 				Height = 200,
 				Width = 200,
+				Margin = new Thickness(5)
 			};
 			_button = new Button
 			{
