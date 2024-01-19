@@ -64,6 +64,7 @@ namespace AIFocusStacking.Services
 			ServiceResult serviceResult = new();
 			try
 			{
+				Directory.CreateDirectory("outputImages");
 				//Co najmniej dwa zdjęcia wymagane
 				if (photos.Count() < 2)
 				{
@@ -115,7 +116,7 @@ namespace AIFocusStacking.Services
 
 					//Zapisanie zdjęcia po filtrowaniu
 					_photos[i].MatrixAfterLaplace = matLaplace;
-					_ = matLaplace.SaveImage($"laplace{i}.jpg");
+					_ = matLaplace.SaveImage($"outputImages\\laplace{i}.jpg");
 
 				}
 
@@ -145,7 +146,7 @@ namespace AIFocusStacking.Services
 				}
 
 				//Zapisz zdjęcie
-				_ = result.SaveImage("result." + _photos.First().Name.Split(".").Last());
+				_ = result.SaveImage("outputImages\\result." + _photos.First().Name.Split(".").Last());
 
 				serviceResult.Result = ServiceResultStatus.Succes;
 			}

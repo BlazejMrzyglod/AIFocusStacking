@@ -8,6 +8,11 @@ namespace AIFocusStacking.Services
 		//Folder zawierający zdjęcia
 		protected string _repositoryFolder = "images";
 
+		public PhotoRepositoryService()
+		{
+			//Stwórz folder
+			_ = Directory.CreateDirectory(_repositoryFolder);
+		}
 		//Dodaj zdjęcie do folderu
 		//Funkcja kopiuje zdjęcie, które już istnieje na dysku
 		public ServiceResult Add(string path)
@@ -15,9 +20,6 @@ namespace AIFocusStacking.Services
 			ServiceResult result = new();
 			try
 			{
-				//Stwórz folder
-				_ = Directory.CreateDirectory(_repositoryFolder);
-
 				//Kopiuj zdjęcie do folderu
 				File.Copy(path, _repositoryFolder + "\\" + path.Split("\\").Last());
 
@@ -38,9 +40,6 @@ namespace AIFocusStacking.Services
 			ServiceResult result = new();
 			try
 			{
-				//Stwórz folder
-				_ = Directory.CreateDirectory(_repositoryFolder);
-
 				//Kopiuj zdjęcia do folderu
 				foreach (string path in paths)
 				{
@@ -102,7 +101,10 @@ namespace AIFocusStacking.Services
 			ServiceResult result = new();
 			try
 			{
-				Directory.Delete(_repositoryFolder, true);
+				foreach (string file in Directory.GetFiles(_repositoryFolder))
+				{
+					File.Delete(file);
+				}
 				result.Result = ServiceResultStatus.Succes;
 			}
 			catch (Exception e)

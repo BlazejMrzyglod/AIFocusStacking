@@ -13,7 +13,11 @@ namespace AIFocusStacking.Services
 	{
 		//Folder zawierający pliki
 		protected string _repositoryFolder = "jsonFiles";
-
+		public JsonRepositoryService()
+		{
+			//Stwórz folder
+			_ = Directory.CreateDirectory(_repositoryFolder);
+		}
 		//Dodaj plik do folderu
 		//Funkcja kopiuje plik, który już istnieje na dysku
 		public ServiceResult Add(string path)
@@ -21,9 +25,6 @@ namespace AIFocusStacking.Services
 			ServiceResult result = new();
 			try
 			{
-				//Stwórz folder
-				_ = Directory.CreateDirectory(_repositoryFolder);
-
 				//Kopiuj plik do folderu
 				File.Copy(path, _repositoryFolder + "\\" + path.Split("\\").Last());
 
@@ -44,9 +45,6 @@ namespace AIFocusStacking.Services
 			ServiceResult result = new();
 			try
 			{
-				// Stwórz folder
-				_ = Directory.CreateDirectory(_repositoryFolder);
-
 				//Kopiuj pliki do folderu
 				foreach (string path in paths)
 				{
@@ -86,7 +84,10 @@ namespace AIFocusStacking.Services
 			ServiceResult result = new();
 			try
 			{
-				Directory.Delete(_repositoryFolder, true);
+				foreach (string file in Directory.GetFiles(_repositoryFolder))
+				{
+					File.Delete(file);
+				}
 				result.Result = ServiceResultStatus.Succes;
 			}
 			catch (Exception e)
