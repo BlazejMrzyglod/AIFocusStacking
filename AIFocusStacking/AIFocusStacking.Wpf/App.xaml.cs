@@ -1,4 +1,5 @@
 ﻿using AIFocusStacking.Services;
+using AIFocusStacking.Wpf.Pages;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using System.Windows;
@@ -20,6 +21,7 @@ namespace AIFocusStacking.Wpf
 		private static void ConfigureServices(ServiceCollection services)
 		{
 			_ = services.AddSingleton<MainWindow>();
+			_ = services.AddSingleton<HomePage>();
 			_ = services.AddScoped(typeof(IRepositoryService<string>), typeof(PhotoRepositoryService));
 			_ = services.AddScoped(typeof(IRepositoryService<JArray>), typeof(JsonRepositoryService));
 			_ = services.AddScoped(typeof(IConsoleCommandsService), typeof(ConsoleCommandsService));
@@ -31,7 +33,9 @@ namespace AIFocusStacking.Wpf
 		private void OnStartup(object sender, StartupEventArgs e)
 		{
 			MainWindow? mainWindow = serviceProvider.GetService<MainWindow>();
+			mainWindow!.WindowState = WindowState.Maximized;;
 			mainWindow!.Show();
+
 			IRepositoryService<string> photoRepositoryService = serviceProvider.GetService<IRepositoryService<string>>()!;
 			IRepositoryService<JArray> jsonRepositoryService = serviceProvider.GetService<IRepositoryService<JArray>>()!;
 			IConsoleCommandsService consoleCommandsService = serviceProvider.GetService<IConsoleCommandsService>()!;

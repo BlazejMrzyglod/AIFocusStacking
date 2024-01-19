@@ -1,0 +1,39 @@
+﻿<Page x:Class="AIFocusStacking.Wpf.Pages.HomePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:fa="http://schemas.fontawesome.io/icons/"
+      xmlns:local="clr-namespace:AIFocusStacking.Wpf.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="HomePage">
+
+    <Grid>
+        <fa:ImageAwesome x:Name="LoadingSpinner" Visibility="Hidden" Icon="Spinner" Spin="True" SpinDuration="5" Foreground="DarkGray" Panel.ZIndex="99" HorizontalAlignment="Center" VerticalAlignment="Center" Height="452" Width="175"/>
+        <WrapPanel x:Name="ImagesWrapPanel" AllowDrop="True" Drop="ImagesWrapPanel_Drop" Background="#4D4D4D" Margin="219,73,10,10"></WrapPanel>
+        <Button x:Name="RunFocusStacking" Background="#393939" Foreground="White" Content="Połącz zdjęcia" HorizontalAlignment="Left" Height="58" Margin="444,10,0,0" VerticalAlignment="Top" Width="122" Click="RunFocusStacking_Click" RenderTransformOrigin="0.474,0.511"/>
+        <Button x:Name="ChooseImagesButton" Background="#393939" Foreground="White" Content="Wybierz zdjęcia lub upuść je poniżej" HorizontalAlignment="Left" VerticalAlignment="Top" Height="58" Margin="219,10,0,0" Click="ChooseImagesButton_Click" RenderTransformOrigin="0.464,-0.282" Width="209"/>
+        <CheckBox x:Name="Alignment" Background="#4D4D4D" Foreground="White" IsChecked="False" Content="CheckBox" HorizontalAlignment="Left" Height="15" Margin="83,159,0,0" VerticalAlignment="Top" Width="17" Click="Alignment_Click"/>
+        <CheckBox x:Name="Gauss" Background="#4D4D4D" Foreground="White" IsChecked="True" Content="CheckBox" HorizontalAlignment="Left" Height="18" Margin="47,131,0,0" VerticalAlignment="Top" Width="17" Click="Gauss_Click"/>
+        <Label Foreground="White" Content="Wyrównanie" HorizontalAlignment="Left" Height="26" Margin="10,153,0,0" VerticalAlignment="Top" Width="80"/>
+        <Label Foreground="White" Content="Gauss" HorizontalAlignment="Left" Height="26" Margin="9,124,0,0" VerticalAlignment="Top" Width="44"/>
+        <TextBox x:Name="GaussSize" Background="#4D4D4D" Foreground="White" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Height="20" Margin="65,130,0,0" TextWrapping="Wrap" Text="5" VerticalAlignment="Top" Width="25" TextChanged="GaussSize_TextChanged"/>
+        <Label Foreground="White" Content="Laplace" HorizontalAlignment="Left" Height="26" Margin="9,100,0,0" VerticalAlignment="Top" Width="54"/>
+        <TextBox x:Name="LaplaceSize" Background="#4D4D4D" Foreground="White" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Height="20" Margin="66,105,0,0" TextWrapping="Wrap" Text="3" VerticalAlignment="Top" Width="25" TextChanged="LaplaceSize_TextChanged"/>
+        <Label Foreground="White" Content="Promień obszaru" HorizontalAlignment="Left" Height="26" Margin="9,74,0,0" VerticalAlignment="Top" Width="99"/>
+        <TextBox x:Name="MaskSize" Background="#4D4D4D" Foreground="White" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Height="20" Margin="108,80,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="26" TextChanged="MaskSize_TextChanged"/>
+        <CheckBox x:Name="TakeAll" Background="#4D4D4D" Foreground="White" IsChecked="False" Content="CheckBox" HorizontalAlignment="Left" Height="16" Margin="83,184,0,0" VerticalAlignment="Top" Width="17" Click="TakeAll_Click"/>
+        <Label Foreground="White" Content="Cały obszar" HorizontalAlignment="Left" Height="26" Margin="10,178,0,0" VerticalAlignment="Top" Width="73"/>
+        <Label Foreground="White" Content="Metoda" HorizontalAlignment="Left" Height="26" Margin="6,45,0,0" VerticalAlignment="Top" Width="54"/>
+        <ComboBox x:Name="SelectMethod" Background="#4D4D4D" Foreground="White" Width="126" VerticalAlignment="Top" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}" HorizontalAlignment="Left" Margin="66,49,0,0" SelectionChanged="SelectMethod_SelectionChanged" SelectedIndex="0" >
+            <ComboBoxItem Content="Bez SI" Background="#4D4D4D" Foreground="White"/>
+            <ComboBoxItem Content="Segmentacja instancji" Background="#4D4D4D" Foreground="White"/>
+            <ComboBoxItem Content="Segmentacja panoptyczna" Background="#4D4D4D" Foreground="White"/>
+        </ComboBox>
+        <Label Foreground="White" Content="Pewność" HorizontalAlignment="Left" Height="26" Margin="10,199,0,0" VerticalAlignment="Top" Width="64"/>
+        <TextBox x:Name="Confidence" Background="#4D4D4D" Foreground="White" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Height="20" Margin="66,204,0,0" TextWrapping="Wrap" Text="0.5" VerticalAlignment="Top" Width="26" TextChanged="Confidence_TextChanged"/>
+        <Button x:Name="DeletePhotos" Background="#393939" Foreground="White" Content="Usuń zdjęcia" HorizontalAlignment="Left" Height="34" Margin="10,10,0,0" VerticalAlignment="Top" Width="90" Click="DeletePhotos_Click" RenderTransformOrigin="0.474,0.511"/>
+
+    </Grid>
+</Page>
