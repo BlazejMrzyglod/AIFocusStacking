@@ -1,10 +1,4 @@
-﻿using AIFocusStacking.Models;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json.Linq;
 
 namespace AIFocusStacking.Services
 {
@@ -122,7 +116,7 @@ namespace AIFocusStacking.Services
 		public IEnumerable<JArray> GetAll()
 		{
 			IEnumerable<string> paths = Directory.GetFiles(_repositoryFolder);
-			foreach (string path in paths) 
+			foreach (string path in paths)
 			{
 				yield return JArray.Parse(File.ReadAllText($"{path}"));
 			}

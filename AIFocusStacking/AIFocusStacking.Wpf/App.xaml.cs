@@ -34,7 +34,7 @@ namespace AIFocusStacking.Wpf
 		private void OnStartup(object sender, StartupEventArgs e)
 		{
 			MainWindow? mainWindow = serviceProvider.GetService<MainWindow>();
-			mainWindow!.WindowState = WindowState.Maximized;;
+			mainWindow!.WindowState = WindowState.Maximized; ;
 			mainWindow!.Show();
 
 			IRepositoryService<string> photoRepositoryService = serviceProvider.GetService<IRepositoryService<string>>()!;

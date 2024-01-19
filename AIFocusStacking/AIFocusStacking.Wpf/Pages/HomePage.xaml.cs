@@ -3,17 +3,11 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace AIFocusStacking.Wpf.Pages
 {
@@ -118,7 +112,7 @@ namespace AIFocusStacking.Wpf.Pages
 		{
 			//Uruchom ikonę ładowania
 			LoadingSpinner.Visibility = Visibility.Visible;
-			
+
 			//Pobierz zdjęcia z repozytorium
 			IEnumerable<string> photos = _photoRepository.GetAll();
 
@@ -138,10 +132,10 @@ namespace AIFocusStacking.Wpf.Pages
 
 				_ = MessageBox.Show(messages, "Błąd", button, icon);
 			}
-			else if(result.Result == ServiceResultStatus.Succes)
+			else if (result.Result == ServiceResultStatus.Succes)
 			{
 				_resultPage.GetResults();
-				NavigationService.Navigate(_resultPage);
+				_ = NavigationService.Navigate(_resultPage);
 			}
 
 			//Wyłącz ikonę ładowania
@@ -191,18 +185,7 @@ namespace AIFocusStacking.Wpf.Pages
 		private void SelectMethod_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			ComboBoxItem selectedItem = (ComboBoxItem)SelectMethod.SelectedItem;
-			if (selectedItem.Content.ToString() == "Bez SI")
-			{
-				method = "1";
-			}
-			else if (selectedItem.Content.ToString() == "Segmentacja instancji")
-			{
-				method = "2";
-			}
-			else
-			{
-				method = "3";
-			}
+			method = selectedItem.Content.ToString() == "Bez SI" ? "1" : selectedItem.Content.ToString() == "Segmentacja instancji" ? "2" : "3";
 		}
 
 		private void Confidence_TextChanged(object sender, TextChangedEventArgs e)
@@ -215,7 +198,7 @@ namespace AIFocusStacking.Wpf.Pages
 
 		private void DeletePhotos_Click(object sender, RoutedEventArgs e)
 		{
-			_photoRepository.DeleteAll();
+			_ = _photoRepository.DeleteAll();
 			ImagesWrapPanel.Children.Clear();
 		}
 	}
@@ -260,8 +243,8 @@ namespace AIFocusStacking.Wpf.Pages
 		private void InitializeComponents()
 		{
 			Grid grid = new();
-			grid.Children.Add(_image);
-			grid.Children.Add(_button);
+			_ = grid.Children.Add(_image);
+			_ = grid.Children.Add(_button);
 
 			Content = grid;
 		}
@@ -279,7 +262,7 @@ namespace AIFocusStacking.Wpf.Pages
 		private void Button_Click(object sender, RoutedEventArgs e)
 		{
 			_wrapPanel.Children.Remove(this);
-			_photoRepository.Delete(_name);
+			_ = _photoRepository.Delete(_name);
 		}
 	}
 }

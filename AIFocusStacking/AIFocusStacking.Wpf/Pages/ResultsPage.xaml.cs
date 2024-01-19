@@ -1,22 +1,8 @@
-﻿using AIFocusStacking.Models;
-using AIFocusStacking.Services;
-using OpenCvSharp;
+﻿using AIFocusStacking.Services;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Interop;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace AIFocusStacking.Wpf.Pages
 {
@@ -26,7 +12,7 @@ namespace AIFocusStacking.Wpf.Pages
 		public ResultsPage(IRepositoryService<string> photoRepository)
 		{
 			_photoRepository = photoRepository;
-			InitializeComponent();			
+			InitializeComponent();
 		}
 		public void GetResults()
 		{
@@ -35,9 +21,9 @@ namespace AIFocusStacking.Wpf.Pages
 			{
 				MainGrid.Children.Add(new Image { Source = new BitmapImage(new Uri(photos.Where(r => r.Contains("result")).FirstOrDefault()!)) });
 			}*/
-			foreach (string photo in photos) 
+			foreach (string photo in photos)
 			{
-				MainGrid.Children.Add(new Image { Source = new BitmapImage(new Uri(System.IO.Path.GetFullPath(photo))) });
+				_ = MainGrid.Children.Add(new Image { Source = new BitmapImage(new Uri(System.IO.Path.GetFullPath(photo))) });
 			}
 		}
 	}

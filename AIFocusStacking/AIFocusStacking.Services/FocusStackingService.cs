@@ -64,7 +64,7 @@ namespace AIFocusStacking.Services
 			ServiceResult serviceResult = new();
 			try
 			{
-				Directory.CreateDirectory("outputImages");
+				_ = Directory.CreateDirectory("outputImages");
 				//Co najmniej dwa zdjęcia wymagane
 				if (photos.Count() < 2)
 				{
@@ -222,11 +222,17 @@ namespace AIFocusStacking.Services
 						for (int x = -maskSize; x <= maskSize; x++)
 						{
 							if (i + x < 0 || i + x >= result.Rows)
+							{
 								continue;
+							}
+
 							for (int y = -maskSize; y <= maskSize; y++)
 							{
 								if (j + y < 0 || j + y >= result.Cols)
+								{
 									continue;
+								}
+
 								intensity += _photos[z].MatrixAfterLaplace!.At<byte>(i + x, j + y);
 							}
 						}

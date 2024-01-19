@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace AIFocusStacking.Services
+﻿namespace AIFocusStacking.Services
 {
 	//Repozytorium zdjęć
 	public class PhotoRepositoryService : IRepositoryService<string>
@@ -83,7 +81,7 @@ namespace AIFocusStacking.Services
 			{
 				foreach (string name in names)
 				{
-					File.Delete($"{_repositoryFolder}\\{name}");					
+					File.Delete($"{_repositoryFolder}\\{name}");
 				}
 				result.Result = ServiceResultStatus.Succes;
 			}

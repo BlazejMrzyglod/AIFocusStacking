@@ -2,7 +2,7 @@
 {
 	//Interfejs repozytorium
 	public interface IRepositoryService<T>
-	{	
+	{
 		IEnumerable<T> GetAll(); //Pobierz wszystkie obiekty		
 		IEnumerable<T> GetMultiple(string[] names); //Pobierz wiele obiektów		
 		T GetSingle(string name); //Pobierz pojedynczy obiekt		

@@ -60,10 +60,10 @@ namespace AIFocusStacking.Services
 				//Wybierz obiekt z największą intensywnością pikseli
 				for (int j = 0; j < photos.Count; j++)
 				{
-					if (currentList[j].Intensity > maxMaskIntensity) 
+					if (currentList[j].Intensity > maxMaskIntensity)
 					{
 						maxMaskIntensity = (int)currentList[j].Intensity!;
-						bestObject = currentList[j]; 
+						bestObject = currentList[j];
 					}
 				}
 
@@ -136,7 +136,7 @@ namespace AIFocusStacking.Services
 			{
 				//Aktualne zdjęcie
 				Photo photo = photos[i];
-				
+
 				//Iteruj przez wszystkie wykryte obiekty danego zdjęcia
 				for (int j = 0; j < photo.DetectedObjects!.Count; j++)
 				{
