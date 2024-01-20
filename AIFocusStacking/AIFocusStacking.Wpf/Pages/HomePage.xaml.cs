@@ -134,7 +134,6 @@ namespace AIFocusStacking.Wpf.Pages
 			}
 			else if (result.Result == ServiceResultStatus.Succes)
 			{
-				_resultPage.GetResults();
 				_ = NavigationService.Navigate(_resultPage);
 			}
 
