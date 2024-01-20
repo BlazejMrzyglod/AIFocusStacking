@@ -6,7 +6,7 @@
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:local="clr-namespace:AIFocusStacking.Wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Height}" Width="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Width}">
+        Title="AIFocusStacking" Height="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Height}" Width="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Width}">
     <Grid>
         <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"></Frame>
     </Grid>

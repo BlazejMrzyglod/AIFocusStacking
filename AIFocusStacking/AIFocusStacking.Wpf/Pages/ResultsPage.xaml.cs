@@ -1,16 +1,13 @@
-﻿using AIFocusStacking.Services;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using OpenCvSharp;
 using System;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace AIFocusStacking.Wpf.Pages
 {
@@ -53,29 +50,20 @@ namespace AIFocusStacking.Wpf.Pages
 			// Repeat similar logic for LaplacePanel and DetectionPanel
 		}
 		public void GetResults()
-		{			
+		{
 			foreach (string photo in photos)
 			{
-				BitmapImage bitmap = new BitmapImage();
+				BitmapImage bitmap = new();
 				bitmap.BeginInit();
 				bitmap.CacheOption = BitmapCacheOption.OnLoad;
-				bitmap.UriSource = new Uri(System.IO.Path.GetFullPath(photo));
+				bitmap.UriSource = new(Path.GetFullPath(photo));
 				bitmap.EndInit();
 
-				if (photo.Contains("result"))
-				{
-					_ = ResultPanel.Children.Add(new Image { Source = bitmap, MaxHeight=ScrollViewer.ActualHeight - 100 > 0 ? ScrollViewer.ActualHeight - 100 : 10, MaxWidth=ScrollViewer.ActualWidth - 300 > 0 ? ScrollViewer.ActualWidth - 300 : 10 });
-				}
-
-				else if(photo.Contains("laplace"))
-				{
-					_ = LaplacePanel.Children.Add(new CustomResultImage(bitmap));
-				}
-
-				else 
-				{
-					_ = DetectionPanel.Children.Add(new CustomResultImage(bitmap));
-				}
+				_ = photo.Contains("result")
+					? ResultPanel.Children.Add(new Image { Source = bitmap, MaxHeight = ScrollViewer.ActualHeight - 100 > 0 ? ScrollViewer.ActualHeight - 100 : 10, MaxWidth = ScrollViewer.ActualWidth - 300 > 0 ? ScrollViewer.ActualWidth - 300 : 10 })
+					: photo.Contains("laplace")
+						? LaplacePanel.Children.Add(new CustomResultImage(bitmap))
+						: DetectionPanel.Children.Add(new CustomResultImage(bitmap));
 			}
 		}
 
@@ -85,19 +73,21 @@ namespace AIFocusStacking.Wpf.Pages
 			LaplacePanel.Children.Clear();
 			DetectionPanel.Children.Clear();
 			Directory.Delete("outputImages", true);
-			NavigationService.Navigate(_homePage);
+			_ = NavigationService.Navigate(_homePage);
 		}
 
 		private void SaveImage_Click(object sender, RoutedEventArgs e)
 		{
 			string result = System.IO.Path.GetFullPath(photos.Where(r => r.Contains("result")).First());
-			SaveFileDialog fileDialog = new SaveFileDialog
+			SaveFileDialog fileDialog = new()
 			{
 				FileName = result.Split("\\").Last()
 			};
 
 			if (fileDialog.ShowDialog() == true)
+			{
 				File.Copy(result, fileDialog.FileName);
+			}
 		}
 	}
 	public class CustomResultImage : UserControl
@@ -116,7 +106,7 @@ namespace AIFocusStacking.Wpf.Pages
 			_button = new Button
 			{
 				Background = Brushes.Transparent,
-				BorderThickness= new Thickness(0),
+				BorderThickness = new Thickness(0),
 				Cursor = Cursors.Hand
 			};
 			_button.Click += Button_Click;
