@@ -1,11 +1,14 @@
 ﻿using AIFocusStacking.Services;
 using Microsoft.Win32;
+using OpenCvSharp;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
@@ -66,12 +69,12 @@ namespace AIFocusStacking.Wpf.Pages
 
 				else if(photo.Contains("laplace"))
 				{
-					_ = LaplacePanel.Children.Add(new Image { Source = bitmap, Margin = new Thickness(5) });
+					_ = LaplacePanel.Children.Add(new CustomResultImage(bitmap));
 				}
 
 				else 
 				{
-					_ = DetectionPanel.Children.Add(new Image { Source = bitmap, Margin = new Thickness(5) });
+					_ = DetectionPanel.Children.Add(new CustomResultImage(bitmap));
 				}
 			}
 		}
@@ -95,6 +98,48 @@ namespace AIFocusStacking.Wpf.Pages
 
 			if (fileDialog.ShowDialog() == true)
 				File.Copy(result, fileDialog.FileName);
+		}
+	}
+	public class CustomResultImage : UserControl
+	{
+		protected Image _image;
+		protected Button _button;
+		protected string _name;
+
+		public CustomResultImage(BitmapImage bitmap)
+		{
+			_image = new Image
+			{
+				Source = bitmap,
+				Margin = new Thickness(5)
+			};
+			_button = new Button
+			{
+				Background = Brushes.Transparent,
+				BorderThickness= new Thickness(0),
+				Cursor = Cursors.Hand
+			};
+			_button.Click += Button_Click;
+
+			_name = bitmap.UriSource.OriginalString;
+
+			InitializeComponents();
+		}
+
+		private void InitializeComponents()
+		{
+			Grid grid = new();
+			_ = grid.Children.Add(_image);
+			_ = grid.Children.Add(_button);
+
+			Content = grid;
+		}
+
+		private void Button_Click(object sender, RoutedEventArgs e)
+		{
+			Mat image = Cv2.ImRead(_name);
+			Cv2.NamedWindow(_name.Split("\\").Last(), WindowFlags.KeepRatio);
+			Cv2.ImShow(_name.Split("\\").Last(), image);
 		}
 	}
 }
