@@ -1,18 +1,21 @@
 ﻿using AIFocusStacking.Services;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 namespace AIFocusStacking.Wpf.Pages
 {
 	public partial class ResultsPage : Page
 	{
-		protected readonly IRepositoryService<string> _photoRepository;
-		public ResultsPage(IRepositoryService<string> photoRepository)
+		protected readonly HomePage _homePage;
+
+		public ResultsPage(HomePage homePage)
 		{
-			_photoRepository = photoRepository;
+			_homePage = homePage;
 			InitializeComponent();
 			Loaded += ResultsPage_Loaded;
 			SizeChanged += ResultsPage_SizeChanged;
@@ -66,6 +69,14 @@ namespace AIFocusStacking.Wpf.Pages
 					_ = DetectionPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(System.IO.Path.GetFullPath(photo))), Margin = new Thickness(5) });
 				}
 			}
+		}
+
+		private void BackArrow_Click(object sender, RoutedEventArgs e)
+		{
+			ResultPanel.Children.Clear();
+			LaplacePanel.Children.Clear();
+			DetectionPanel.Children.Clear();
+			NavigationService.Navigate(_homePage);
 		}
 	}
 }

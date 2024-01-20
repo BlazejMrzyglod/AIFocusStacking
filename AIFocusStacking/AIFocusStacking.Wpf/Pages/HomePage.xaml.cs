@@ -49,9 +49,7 @@ namespace AIFocusStacking.Wpf.Pages
 		//Wartość pewności powyżej której wykryty obiekt jest rejestrowany
 		private string confidence;
 
-		private readonly ResultsPage _resultPage;
-
-		public HomePage(IRepositoryService<string> photoRepository, IFocusStackingService focusStackingService, ResultsPage resultPage)
+		public HomePage(IRepositoryService<string> photoRepository, IFocusStackingService focusStackingService)
 		{
 			_photoRepository = photoRepository;
 			InitializeComponent();
@@ -63,7 +61,6 @@ namespace AIFocusStacking.Wpf.Pages
 			maskSize = Convert.ToInt32(MaskSize.Text);
 			_focusStackingService = focusStackingService;
 			confidence = Confidence.Text;
-			_resultPage = resultPage;
 		}
 
 		//Funkcja umożliwająca wybranie zdjęć
@@ -134,6 +131,7 @@ namespace AIFocusStacking.Wpf.Pages
 			}
 			else if (result.Result == ServiceResultStatus.Succes)
 			{
+				ResultsPage _resultPage = new(this);
 				_ = NavigationService.Navigate(_resultPage);
 			}
 
