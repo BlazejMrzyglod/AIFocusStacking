@@ -10,8 +10,8 @@
       Title="ResultPage"
       Background="#393939" Foreground="White">
     <Grid>
-        <Button x:Name="BackArrow" Click="BackArrow_Click" Background="Transparent" Panel.ZIndex="99" BorderThickness="0" HorizontalAlignment="Left" HorizontalContentAlignment="Left" VerticalAlignment="Top" Height="36" Width="37" Margin="5,5,0,0">
-            <fa:ImageAwesome Icon="ArrowLeft" SpinDuration="5" Foreground="DarkGray" />
+        <Button x:Name="BackArrow" Click="BackArrow_Click" Background="Transparent" Panel.ZIndex="99" BorderThickness="0" HorizontalAlignment="Left" HorizontalContentAlignment="Left" VerticalAlignment="Top" Height="36" Width="37" Margin="10,10,0,0">
+            <fa:ImageAwesome Icon="ArrowLeft" Foreground="DarkGray" />
         </Button>
         <ScrollViewer x:Name="ScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <Grid x:Name="MainGrid" HorizontalAlignment="Center" VerticalAlignment="Center" MaxHeight="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Height}" MaxWidth="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Width}">
@@ -24,12 +24,14 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Label Content="Zdjęcie wynikowe" Grid.Column="0" Grid.Row="0" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+                <Button x:Name="SaveImage" FontSize="20"  Grid.Column="0" Grid.Row="0" Content="Zapisz zdjęcie" Foreground="White" Click="SaveImage_Click" Background="#393939" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalAlignment="Top" Height="39" Width="136" Margin="50,14,0,0" Grid.RowSpan="2">
+                </Button>
+                <Label Content="Zdjęcie wynikowe"  FontSize="20" Grid.Column="0" Grid.Row="0" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,15,0,-20"></Label>
                 <StackPanel x:Name="ResultPanel" Grid.Column="0" Grid.Row="1" Background="#4D4D4D" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="40,40,0,40"/>
-                <Label Content="Mapy ostrości" Grid.Column="1" Grid.Row="0" Foreground="White" HorizontalAlignment="Center" Margin="80,0,0,0"></Label>
+                <Label Content="Mapy ostrości"  FontSize="20" Grid.Column="1" Grid.Row="0" Foreground="White" HorizontalAlignment="Center" Margin="80,15,0,-20"></Label>
                 <StackPanel x:Name="LaplacePanel" Grid.Column="1" Grid.Row="1" Background="#4D4D4D" HorizontalAlignment="Center" Margin="80,40,0,40" Width="80"/>
-                <Label Content="Wykryte obiekty" Grid.Column="2" Grid.Row="0" Foreground="White" HorizontalAlignment="Center"  Margin="40,0,0,0"></Label>
-                <StackPanel x:Name="DetectionPanel" Grid.Column="2" Grid.Row="1" Background="#4D4D4D" HorizontalAlignment="Center" Margin="40,40,0,40" Width="80"/>
+                <Label Content="Wykryte obiekty" FontSize="20" Grid.Column="2" Grid.Row="0" Foreground="White" HorizontalAlignment="Center"  Margin="40,15,0,-20"></Label>
+                <StackPanel x:Name="DetectionPanel"  Grid.Column="2" Grid.Row="1" Background="#4D4D4D" HorizontalAlignment="Center" Margin="40,40,0,40" Width="80"/>
             </Grid>
         </ScrollViewer>
     </Grid>

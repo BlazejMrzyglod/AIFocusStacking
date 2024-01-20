@@ -1,6 +1,8 @@
 ﻿using AIFocusStacking.Services;
+using Microsoft.Win32;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,6 +14,7 @@ namespace AIFocusStacking.Wpf.Pages
 	public partial class ResultsPage : Page
 	{
 		protected readonly HomePage _homePage;
+		protected string[] photos;
 
 		public ResultsPage(HomePage homePage)
 		{
@@ -19,6 +22,7 @@ namespace AIFocusStacking.Wpf.Pages
 			InitializeComponent();
 			Loaded += ResultsPage_Loaded;
 			SizeChanged += ResultsPage_SizeChanged;
+			photos = Directory.GetFiles("outputImages");
 		}
 		private void ResultsPage_Loaded(object sender, RoutedEventArgs e)
 		{
@@ -46,8 +50,7 @@ namespace AIFocusStacking.Wpf.Pages
 			// Repeat similar logic for LaplacePanel and DetectionPanel
 		}
 		public void GetResults()
-		{
-			string[] photos = Directory.GetFiles("outputImages");
+		{			
 			foreach (string photo in photos)
 			{
 				BitmapImage bitmap = new BitmapImage();
@@ -78,7 +81,20 @@ namespace AIFocusStacking.Wpf.Pages
 			ResultPanel.Children.Clear();
 			LaplacePanel.Children.Clear();
 			DetectionPanel.Children.Clear();
+			Directory.Delete("outputImages", true);
 			NavigationService.Navigate(_homePage);
+		}
+
+		private void SaveImage_Click(object sender, RoutedEventArgs e)
+		{
+			string result = System.IO.Path.GetFullPath(photos.Where(r => r.Contains("result")).First());
+			SaveFileDialog fileDialog = new SaveFileDialog
+			{
+				FileName = result.Split("\\").Last()
+			};
+
+			if (fileDialog.ShowDialog() == true)
+				File.Copy(result, fileDialog.FileName);
 		}
 	}
 }

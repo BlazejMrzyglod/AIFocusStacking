@@ -27,7 +27,7 @@
             <CheckBox x:Name="TakeAll" Background="#4D4D4D" Foreground="White" IsChecked="False" Content="CheckBox" HorizontalAlignment="Left" Height="16" Margin="83,184,0,0" VerticalAlignment="Top" Width="17" Click="TakeAll_Click"/>
             <Label Foreground="White" Content="Cały obszar" HorizontalAlignment="Left" Height="26" Margin="10,178,0,0" VerticalAlignment="Top" Width="73"/>
             <Label Foreground="White" Content="Metoda" HorizontalAlignment="Left" Height="26" Margin="6,45,0,0" VerticalAlignment="Top" Width="54"/>
-            <ComboBox x:Name="SelectMethod" Background="#4D4D4D" Foreground="White" Width="126" VerticalAlignment="Top" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}" HorizontalAlignment="Left" Margin="66,49,0,0" SelectionChanged="SelectMethod_SelectionChanged" SelectedIndex="0" >
+            <ComboBox x:Name="SelectMethod" Background="#4D4D4D" Foreground="White" Width="141" VerticalAlignment="Top" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}" HorizontalAlignment="Left" Margin="66,49,0,0" SelectionChanged="SelectMethod_SelectionChanged" SelectedIndex="0" >
                 <ComboBoxItem Content="Bez SI" Background="#4D4D4D" Foreground="White"/>
                 <ComboBoxItem Content="Segmentacja instancji" Background="#4D4D4D" Foreground="White"/>
                 <ComboBoxItem Content="Segmentacja panoptyczna" Background="#4D4D4D" Foreground="White"/>
