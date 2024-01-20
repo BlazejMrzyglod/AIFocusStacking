@@ -38,8 +38,8 @@ namespace AIFocusStacking.Wpf.Pages
 			{
 				if (element is Image image)
 				{
-					image.MaxHeight = maxHeight - 100;
-					image.MaxWidth = maxWidth - 300;
+					image.MaxHeight = maxHeight - 100 > 0 ? maxHeight - 100 : 10;
+					image.MaxWidth = maxWidth - 300 > 0 ? maxWidth - 300 : 10;
 				}
 			}
 
@@ -48,25 +48,27 @@ namespace AIFocusStacking.Wpf.Pages
 		public void GetResults()
 		{
 			string[] photos = Directory.GetFiles("outputImages");
-			/*if (photos.Where(r => r.Contains("result")).Any())
-			{
-				MainGrid.Children.Add(new Image { Source = new BitmapImage(new Uri(photos.Where(r => r.Contains("result")).FirstOrDefault()!)) });
-			}*/
 			foreach (string photo in photos)
 			{
+				BitmapImage bitmap = new BitmapImage();
+				bitmap.BeginInit();
+				bitmap.CacheOption = BitmapCacheOption.OnLoad;
+				bitmap.UriSource = new Uri(System.IO.Path.GetFullPath(photo));
+				bitmap.EndInit();
+
 				if (photo.Contains("result"))
 				{
-					_ = ResultPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(System.IO.Path.GetFullPath(photo))), MaxHeight=ScrollViewer.ActualHeight - 100, MaxWidth=ScrollViewer.ActualWidth - 300});
+					_ = ResultPanel.Children.Add(new Image { Source = bitmap, MaxHeight=ScrollViewer.ActualHeight - 100 > 0 ? ScrollViewer.ActualHeight - 100 : 10, MaxWidth=ScrollViewer.ActualWidth - 300 > 0 ? ScrollViewer.ActualWidth - 300 : 10 });
 				}
 
 				else if(photo.Contains("laplace"))
 				{
-					_ = LaplacePanel.Children.Add(new Image { Source = new BitmapImage(new Uri(System.IO.Path.GetFullPath(photo))), Margin = new Thickness(5) });
+					_ = LaplacePanel.Children.Add(new Image { Source = bitmap, Margin = new Thickness(5) });
 				}
 
 				else 
 				{
-					_ = DetectionPanel.Children.Add(new Image { Source = new BitmapImage(new Uri(System.IO.Path.GetFullPath(photo))), Margin = new Thickness(5) });
+					_ = DetectionPanel.Children.Add(new Image { Source = bitmap, Margin = new Thickness(5) });
 				}
 			}
 		}

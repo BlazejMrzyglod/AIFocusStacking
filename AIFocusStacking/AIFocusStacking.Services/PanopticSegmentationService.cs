@@ -228,7 +228,7 @@ namespace AIFocusStacking.Services
 				//Zapisz zdjęcia po filtrze Laplace'a
 				for (int j = 0; j < photos.Count; j++)
 				{
-					_ = photos[j].MatrixAfterLaplace!.SaveImage($"laplace{j}.jpg");
+					_ = photos[j].MatrixAfterLaplace!.SaveImage($"outputImages\\laplace{j}.jpg");
 				}
 			}
 		}
